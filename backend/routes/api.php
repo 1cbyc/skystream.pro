@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\File;
 */
 
 // Standard Laravel user route - useful for checking authentication status.
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+Route::middleware("auth:sanctum")->get("/user", function (Request $request) {
     return $request->user();
 });
 
@@ -28,12 +28,16 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // and allows for a plug-and-play modular architecture.
 // --------------------------------------------------------------------------
 
-$modulesPath = app_path('Modules');
-$moduleDirectories = File::directories($modulesPath);
+$modulesPath = app_path("Modules");
 
-foreach ($moduleDirectories as $moduleDirectory) {
-    $routesPath = $moduleDirectory . '/Routes/api.php';
-    if (File::exists($routesPath)) {
-        require $routesPath;
+if (File::isDirectory($modulesPath)) {
+    $moduleDirectories = File::directories($modulesPath);
+
+    foreach ($moduleDirectories as $moduleDirectory) {
+        $routesPath = $moduleDirectory . "/Routes/api.php";
+        if (File::exists($routesPath)) {
+            // We group the routes to ensure they are loaded within the API context.
+            Route::group([], $routesPath);
+        }
     }
 }

@@ -179,3 +179,4 @@ temp/
 .DS_Store
 *.log
 docs/
+!docs/system-design.txt

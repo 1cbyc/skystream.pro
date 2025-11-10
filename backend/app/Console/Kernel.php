@@ -15,7 +15,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        \App\Modules\Mars\Commands\DispatchMarsPhotoJobs::class,
     ];
 
     /**
@@ -39,6 +39,12 @@ class Kernel extends ConsoleKernel
         $schedule
             ->job(new FetchNeoWsJob())
             ->dailyAt("02:00") // Staggered from the APOD job
+            ->withoutOverlapping();
+
+        // Schedule the command to dispatch Mars photo ingestion jobs daily.
+        $schedule
+            ->command("mars:dispatch-jobs")
+            ->dailyAt("03:00") // Staggered from the other jobs
             ->withoutOverlapping();
     }
 

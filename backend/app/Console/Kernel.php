@@ -2,12 +2,21 @@
 
 namespace App\Console;
 
-use App\Jobs\FetchAPODJob;
+use App\Modules\Mood\Jobs\FetchAPODJob;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 class Kernel extends ConsoleKernel
 {
+    /**
+     * The Artisan commands provided by your application.
+     *
+     * @var array
+     */
+    protected $commands = [
+        //
+    ];
+
     /**
      * Define the application's command schedule.
      *
@@ -16,9 +25,14 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // Schedule the FetchAPODJob to run daily at a specific time (e.g., 1:00 AM server time).
-        // This fetches the Astronomy Picture of the Day and populates the database.
-        $schedule->job(new FetchAPODJob())->dailyAt('01:00');
+        // Schedule the FetchAPODJob to run daily at a time when server load is typically low.
+        // This dispatches the job to the queue worker.
+        // `withoutOverlapping()` is a safeguard to prevent the job from running
+        // again if the previous day's job hasn't finished.
+        $schedule
+            ->job(new FetchAPODJob())
+            ->dailyAt("01:00")
+            ->withoutOverlapping();
     }
 
     /**
@@ -28,8 +42,8 @@ class Kernel extends ConsoleKernel
      */
     protected function commands(): void
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . "/Commands");
 
-        require base_path('routes/console.php');
+        require base_path("routes/console.php");
     }
 }

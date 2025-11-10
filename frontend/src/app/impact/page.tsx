@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useState, useMemo } from 'react';
-import useSWR from 'swr';
-import { format, subDays, startOfWeek } from 'date-fns';
-import dynamic from 'next/dynamic';
-import type { LatLngExpression } from 'leaflet';
+import { useState, useMemo } from "react";
+import useSWR from "swr";
+import { format, subDays, startOfWeek } from "date-fns";
+import dynamic from "next/dynamic";
+import type { LatLngExpression } from "leaflet";
 
 // --- Type Definitions ---
 // These types should match the structure of the data coming from the backend API.
@@ -47,7 +47,7 @@ const fetcher = async (url: string): Promise<ApiResponse> => {
   const res = await fetch(url);
   if (!res.ok) {
     const errorData = await res.json();
-    throw new Error(errorData.message || 'Failed to fetch NEO data.');
+    throw new Error(errorData.message || "Failed to fetch NEO data.");
   }
   const result = await res.json();
   return result.data; // The backend wraps paginated data in a 'data' property.
@@ -61,16 +61,26 @@ const ImpactPage = () => {
   const [endDate, setEndDate] = useState(new Date());
 
   // Construct the API URL based on the selected date range.
-  const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE}/impact/nearby?date_from=${format(startDate, 'yyyy-MM-dd')}&date_to=${format(endDate, 'yyyy-MM-dd')}`;
+  const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE}/impact/nearby?date_from=${format(startDate, "yyyy-MM-dd")}&date_to=${format(endDate, "yyyy-MM-dd")}`;
 
   // Use SWR for data fetching.
-  const { data: apiResponse, error, isLoading } = useSWR<ApiResponse>(apiUrl, fetcher);
+  const {
+    data: apiResponse,
+    error,
+    isLoading,
+  } = useSWR<ApiResponse>(apiUrl, fetcher);
 
   // Dynamically import the map component to avoid SSR issues with Leaflet.
-  const ImpactMap = useMemo(() => dynamic(() => import('@/components/ImpactMap'), {
-    ssr: false,
-    loading: () => <div className="w-full h-full bg-gray-700 animate-pulse rounded-lg"></div>,
-  }), []);
+  const ImpactMap = useMemo(
+    () =>
+      dynamic(() => import("@/components/ImpactMap"), {
+        ssr: false,
+        loading: () => (
+          <div className="w-full h-full bg-gray-700 animate-pulse rounded-lg"></div>
+        ),
+      }),
+    [],
+  );
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4 sm:p-8">
@@ -79,21 +89,33 @@ const ImpactPage = () => {
         <header className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
           <div>
             <h1 className="text-3xl font-bold">NEOWS Impact Explorer</h1>
-            <p className="text-gray-400">Tracking near-Earth objects and their close approaches.</p>
+            <p className="text-gray-400">
+              Tracking near-Earth objects and their close approaches.
+            </p>
           </div>
           <div className="flex items-center gap-2 bg-gray-800 border border-gray-700 rounded-lg p-2">
             <input
               type="date"
-              value={format(startDate, 'yyyy-MM-dd')}
-              onChange={(e) => setStartDate(new Date(e.target.value + 'T00:00:00'))}
+              value={format(startDate, "yyyy-MM-dd")}
+              onChange={(e) => {
+                const newDate = new Date(e.target.value + "T00:00:00");
+                if (e.target.value && !isNaN(newDate.getTime())) {
+                  setStartDate(newDate);
+                }
+              }}
               className="bg-gray-800 text-white p-2 rounded-md"
             />
             <span className="text-gray-400">to</span>
             <input
               type="date"
-              value={format(endDate, 'yyyy-MM-dd')}
-              onChange={(e) => setEndDate(new Date(e.target.value + 'T00:00:00'))}
-              max={format(new Date(), 'yyyy-MM-dd')}
+              value={format(endDate, "yyyy-MM-dd")}
+              onChange={(e) => {
+                const newDate = new Date(e.target.value + "T00:00:00");
+                if (e.target.value && !isNaN(newDate.getTime())) {
+                  setEndDate(newDate);
+                }
+              }}
+              max={format(new Date(), "yyyy-MM-dd")}
               className="bg-gray-800 text-white p-2 rounded-md"
             />
           </div>
@@ -108,7 +130,9 @@ const ImpactPage = () => {
 
           {/* Right Column: List of NEOs */}
           <div className="lg:col-span-1 bg-gray-800/50 p-4 rounded-xl shadow-lg border border-gray-700 h-[60vh] overflow-y-auto">
-            <h2 className="text-xl font-bold mb-4">Close Approaches ({apiResponse?.total ?? 0})</h2>
+            <h2 className="text-xl font-bold mb-4">
+              Close Approaches ({apiResponse?.total ?? 0})
+            </h2>
             {isLoading && <NeoListSkeleton />}
             {error && <ErrorMessage message={error.message} />}
             {apiResponse && <NeoList neos={apiResponse.data} />}
@@ -123,19 +147,34 @@ const ImpactPage = () => {
 
 const NeoList = ({ neos }: { neos: NeoData[] }) => {
   if (!neos || neos.length === 0) {
-    return <p className="text-gray-400">No near-Earth objects found for the selected date range.</p>;
+    return (
+      <p className="text-gray-400">
+        No near-Earth objects found for the selected date range.
+      </p>
+    );
   }
 
   return (
     <div className="flex flex-col gap-3">
-      {neos.map(neo => (
-        <div key={neo.neo_id} className={`p-3 rounded-lg border ${neo.is_potentially_hazardous ? 'border-red-500/50 bg-red-900/20' : 'border-gray-700 bg-gray-800'}`}>
+      {neos.map((neo) => (
+        <div
+          key={neo.neo_id}
+          className={`p-3 rounded-lg border ${neo.is_potentially_hazardous ? "border-red-500/50 bg-red-900/20" : "border-gray-700 bg-gray-800"}`}
+        >
           <p className="font-bold text-white">{neo.name}</p>
           <p className="text-sm text-gray-400">
-            Miss Distance: {parseFloat(neo.close_approach.miss_distance.kilometers).toLocaleString('en-US', { maximumFractionDigits: 0 })} km
+            Miss Distance:{" "}
+            {parseFloat(
+              neo.close_approach.miss_distance.kilometers,
+            ).toLocaleString("en-US", { maximumFractionDigits: 0 })}{" "}
+            km
           </p>
           <p className="text-xs text-gray-500">
-            Diameter: ~{(neo.estimated_diameter.kilometers.estimated_diameter_min * 1000).toFixed(0)} m
+            Diameter: ~
+            {(
+              neo.estimated_diameter.kilometers.estimated_diameter_min * 1000
+            ).toFixed(0)}{" "}
+            m
           </p>
         </div>
       ))}

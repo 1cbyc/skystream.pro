@@ -3,6 +3,7 @@
 namespace App\Modules\Impact\Jobs;
 
 use App\Modules\Impact\Models\NeowsObject;
+use App\Modules\Impact\Models\NeowsObject;
 use App\Modules\Mood\Services\NASAClient;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;

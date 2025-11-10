@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Modules\Impact\Jobs\FetchNeoWsJob;
 use App\Modules\Mood\Jobs\FetchAPODJob;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -32,6 +33,12 @@ class Kernel extends ConsoleKernel
         $schedule
             ->job(new FetchAPODJob())
             ->dailyAt("01:00")
+            ->withoutOverlapping();
+
+        // Schedule the FetchNeoWsJob to run daily to get the upcoming week's NEO data.
+        $schedule
+            ->job(new FetchNeoWsJob())
+            ->dailyAt("02:00") // Staggered from the APOD job
             ->withoutOverlapping();
     }
 

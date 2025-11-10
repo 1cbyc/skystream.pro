@@ -97,6 +97,36 @@ class NASAClient
     }
 
     /**
+     * Fetches photos from a Mars rover for a specific Martian day (sol).
+     *
+     * @param string $rover The name of the rover (e.g., 'curiosity', 'opportunity', 'spirit').
+     * @param int $sol The Martian day (sol) to query.
+     * @param string|null $camera The camera to filter by (optional).
+     * @param int $page The page number for pagination.
+     * @return array|null The photos data or null on failure.
+     */
+    public function fetchMarsPhotos(
+        string $rover,
+        int $sol,
+        ?string $camera = null,
+        int $page = 1,
+    ): ?array {
+        $path = "/mars-photos/api/v1/rovers/{$rover}/photos";
+
+        $query = [
+            "sol" => $sol,
+            "page" => $page,
+        ];
+
+        if ($camera) {
+            $query["camera"] = $camera;
+        }
+
+        // Mars rover photos are historical and don't change. A long cache TTL is safe.
+        return $this->get($path, $query, 60 * 24 * 30); // Cache for 30 days
+    }
+
+    /**
      * A centralized GET request handler with built-in caching.
      *
      * This method constructs the request, checks the cache for an existing

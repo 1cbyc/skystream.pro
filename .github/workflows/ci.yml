@@ -1,75 +1,40 @@
-name: Backend CI (Laravel)
-
-on:
-  push:
-    branches: [ main, develop ]
-    paths:
-      - 'backend/**'
-      - '.github/workflows/ci.yml'
-  pull_request:
-    branches: [ main, develop ]
-    paths:
-      - 'backend/**'
-      - '.github/workflows/ci.yml'
+name: CI
+on: [push, pull_request]
 
 jobs:
-  laravel-tests:
+  backend-tests:
     runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        working-directory: ./backend
-
     services:
       mysql:
-        image: mysql:8.0
+        image: mysql:8
         env:
-          MYSQL_ROOT_PASSWORD: password
-          MYSQL_DATABASE: skystream_test
+          MYSQL_ROOT_PASSWORD: root
         ports:
           - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+      - name: Install deps
+        working-directory: ./backend
+        run: |
+          composer install --no-progress --no-suggest
+      - name: Run phpunit
+        working-directory: ./backend
+        run: vendor/bin/phpunit --testsuite=unit
 
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: '8.2'
-        extensions: mbstring, exif, pcntl, bcmath, gd, pdo_mysql
-        coverage: none # Disable Xdebug/PCOV unless running tests with coverage
-
-    - name: Copy .env file
-      run: php -r "file_exists('.env') || copy('.env.example', '.env');"
-
-    - name: Install Composer Dependencies
-      run: composer install --prefer-dist --no-progress
-
-    - name: Generate application key
-      run: php artisan key:generate
-
-    - name: Run Migrations
-      env:
-        DB_CONNECTION: mysql
-        DB_HOST: 127.0.0.1
-        DB_PORT: ${{ job.services.mysql.ports[3306] }}
-        DB_DATABASE: skystream_test
-        DB_USERNAME: root
-        DB_PASSWORD: password
-      run: php artisan migrate --force
-
-    - name: Run PHPUnit Tests
-      env:
-        DB_CONNECTION: mysql
-        DB_HOST: 127.0.0.1
-        DB_PORT: ${{ job.services.mysql.ports[3306] }}
-        DB_DATABASE: skystream_test
-        DB_USERNAME: root
-        DB_PASSWORD: password
-      run: vendor/bin/phpunit
+  frontend-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Install & Test
+        working-directory: ./frontend
+        run: |
+          npm ci
+          npm run build

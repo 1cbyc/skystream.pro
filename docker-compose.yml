@@ -1,0 +1,111 @@
+version: '3.8'
+
+services:
+  # Backend Service (Laravel)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: skystream_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/var/www/html
+    depends_on:
+      - db
+      - redis
+      - minio
+    networks:
+      - skystream_network
+    env_file:
+      - backend/.env
+
+  # Frontend Service (Next.js)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: skystream_frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - backend
+    networks:
+      - skystream_network
+    env_file:
+      - frontend/.env
+
+  # Database Service (MySQL)
+  db:
+    image: mysql:8.0
+    container_name: skystream_db
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - skystream_db_data:/var/lib/mysql
+    networks:
+      - skystream_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # Cache Service (Redis)
+  redis:
+    image: redis:alpine
+    container_name: skystream_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - skystream_redis_data:/data
+    networks:
+      - skystream_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+
+  # S3-Compatible Storage (MinIO)
+  minio:
+    image: minio/minio:latest
+    container_name: skystream_minio
+    ports:
+      - "9000:9000" # API port
+      - "9001:9001" # Console port
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    command: server /data --console-address ":9001"
+    volumes:
+      - skystream_minio_data:/data
+    networks:
+      - skystream_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+# Volumes
+volumes:
+  skystream_db_data:
+    driver: local
+  skystream_redis_data:
+    driver: local
+  skystream_minio_data:
+    driver: local
+
+# Networks
+networks:
+  skystream_network:
+    driver: bridge

@@ -2,6 +2,7 @@
 
 namespace App\Modules\Impact\Jobs;
 
+use App\Modules\Impact\Models\NeowsObject;
 use App\Modules\Mood\Services\NASAClient;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
@@ -9,13 +10,12 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
 /**
  * A queueable job to fetch Near-Earth Object (NEO) data from the NASA NeoWs API
- * and store it in the database.
+ * and store it in the database using the NeowsObject model.
  */
 class FetchNeoWsJob implements ShouldQueue
 {
@@ -46,9 +46,11 @@ class FetchNeoWsJob implements ShouldQueue
      * @param \Carbon\Carbon|null $startDate The start date for the fetch range. Defaults to today.
      * @param \Carbon\Carbon|null $endDate The end date for the fetch range. Defaults to 7 days from the start date.
      */
-    public function __construct(Carbon $startDate = null, Carbon $endDate = null)
-    {
-        $this->startDate = $startDate ?? Carbon::today('UTC');
+    public function __construct(
+        Carbon $startDate = null,
+        Carbon $endDate = null,
+    ) {
+        $this->startDate = $startDate ?? Carbon::today("UTC");
         $this->endDate = $endDate ?? $this->startDate->copy()->addDays(7);
     }
 
@@ -62,54 +64,69 @@ class FetchNeoWsJob implements ShouldQueue
     {
         $startDateString = $this->startDate->toDateString();
         $endDateString = $this->endDate->toDateString();
-        Log::info("FetchNeoWsJob starting for date range: {$startDateString} to {$endDateString}");
+        Log::info(
+            "FetchNeoWsJob starting for date range: {$startDateString} to {$endDateString}",
+        );
 
         try {
-            $neoData = $nasaClient->fetchNeows($startDateString, $endDateString);
+            $neoData = $nasaClient->fetchNeows(
+                $startDateString,
+                $endDateString,
+            );
 
-            if (!$neoData || !isset($neoData['near_earth_objects'])) {
-                Log::warning("NeoWs data for the specified date range is missing or incomplete. Skipping.");
+            if (!$neoData || !isset($neoData["near_earth_objects"])) {
+                Log::warning(
+                    "NeoWs data for the specified date range is missing or incomplete. Skipping.",
+                );
                 return;
             }
 
-            $processedCount = 0;
+            $insertedCount = 0;
             $updatedCount = 0;
 
             // The API response groups NEOs by date, so we iterate through each date's array.
-            foreach ($neoData['near_earth_objects'] as $date => $objectsOnDate) {
+            foreach (
+                $neoData["near_earth_objects"]
+                as $date => $objectsOnDate
+            ) {
                 foreach ($objectsOnDate as $neo) {
                     // The 'close_approach_data' is an array; we typically care about the first one for this query.
-                    $closeApproachData = $neo['close_approach_data'][0] ?? null;
+                    $closeApproachData = $neo["close_approach_data"][0] ?? null;
 
-                    // Use updateOrInsert to create or update the record. This is idempotent.
-                    $result = DB::table('neows_objects')->updateOrInsert(
-                        ['neo_id' => $neo['neo_reference_id']],
+                    // Use updateOrCreate to find a NEO by its neo_id or create a new one.
+                    // This correctly handles `created_at` and `updated_at` timestamps.
+                    $neowsObject = NeowsObject::updateOrCreate(
+                        ["neo_id" => $neo["neo_reference_id"]], // Attributes to find the record by
                         [
-                            'name' => $neo['name'],
-                            'estimated_diameter' => json_encode($neo['estimated_diameter']),
-                            'is_potentially_hazardous' => $neo['is_potentially_hazardous_asteroid'],
-                            'close_approach' => json_encode($closeApproachData),
-                            'orbit_data' => json_encode($neo['orbital_data']),
-                            'created_at' => now(), // This only sets on insert
-                            'updated_at' => now(), // This updates on both insert and update
-                        ]
+                            "name" => $neo["name"],
+                            "estimated_diameter" => $neo["estimated_diameter"], // Model will cast to JSON
+                            "is_potentially_hazardous" =>
+                                $neo["is_potentially_hazardous_asteroid"],
+                            "close_approach" => $closeApproachData, // Model will cast to JSON
+                            "orbit_data" => $neo["orbital_data"], // Model will cast to JSON
+                        ],
                     );
 
-                    if ($result) {
-                        $processedCount++;
+                    // Check if the model was recently created to correctly log inserts vs. updates.
+                    if ($neowsObject->wasRecentlyCreated) {
+                        $insertedCount++;
                     } else {
                         $updatedCount++;
                     }
                 }
             }
 
-            Log::info("FetchNeoWsJob complete. Inserted: {$processedCount}, Updated: {$updatedCount} NEO records.");
-
+            Log::info(
+                "FetchNeoWsJob complete. Inserted: {$insertedCount}, Updated: {$updatedCount} NEO records.",
+            );
         } catch (Throwable $e) {
-            Log::error("FetchNeoWsJob failed for date range: {$startDateString} to {$endDateString}", [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
+            Log::error(
+                "FetchNeoWsJob failed for date range: {$startDateString} to {$endDateString}",
+                [
+                    "error" => $e->getMessage(),
+                    "trace" => $e->getTraceAsString(),
+                ],
+            );
 
             // Re-throw the exception to let the queue worker handle the failure (retry, etc.).
             throw $e;

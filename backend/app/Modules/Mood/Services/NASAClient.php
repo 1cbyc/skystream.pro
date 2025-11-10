@@ -127,6 +127,24 @@ class NASAClient
     }
 
     /**
+     * Fetches the mission manifest for a specific Mars rover.
+     *
+     * The manifest contains metadata about the rover's mission, such as its
+     * landing date, launch date, status, and the most recent Martian day (sol)
+     * for which photos are available.
+     *
+     * @param string $rover The name of the rover (e.g., 'curiosity', 'opportunity', 'spirit').
+     * @return array|null The manifest data or null on failure.
+     */
+    public function fetchRoverManifest(string $rover): ?array
+    {
+        $path = "/mars-photos/api/v1/manifests/{$rover}";
+
+        // The manifest is updated daily, so a 24-hour cache is appropriate.
+        return $this->get($path, [], 60 * 24);
+    }
+
+    /**
      * A centralized GET request handler with built-in caching.
      *
      * This method constructs the request, checks the cache for an existing

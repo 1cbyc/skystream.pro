@@ -47,7 +47,8 @@ const CapsulePage = () => {
     : null;
 
   // SWR will only start fetching if `apiUrl` is not null.
-  const { data: capsuleData, error, isLoading } = useSWR<CapsuleData>(apiUrl, fetcher);
+  const { data: capsuleData, error, isValidating } = useSWR<CapsuleData>(apiUrl, fetcher);
+  const isLoading = Boolean(apiUrl) && isValidating && !capsuleData;
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,7 +64,7 @@ const CapsulePage = () => {
         <header className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white">Capsule Generator</h1>
           <p className="text-gray-400 mt-2">
-            Generate a "space snapshot" for any significant date, like your birthday.
+            Generate a &quot;space snapshot&quot; for any significant date, like your birthday.
           </p>
         </header>
 
@@ -104,7 +105,7 @@ const CapsulePage = () => {
 
 const InitialState = () => (
   <div className="text-center text-gray-400">
-    <p>Select a date and click "Generate Capsule" to see your moment in space.</p>
+    <p>Select a date and click &quot;Generate Capsule&quot; to see your moment in space.</p>
   </div>
 );
 

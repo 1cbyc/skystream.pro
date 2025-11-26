@@ -1,10 +1,10 @@
+"use client";
+
 export default function SiteFooter() {
   return (
     <footer className="border-t border-gray-800 bg-gray-900 text-gray-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <p className="text-sm">
-          Built on NASA APIs with ❤️ by Isaac
-        </p>
+        <p className="text-sm">Built on NASA APIs with ❤️ by Isaac</p>
         <nav className="flex items-center gap-3">
           <a
             href="https://github.com/1cbyc/skystream.pro"

@@ -85,24 +85,24 @@ function MoodPage() {
               The cosmos through color and emotion, one day at a time.
             </p>
           </div>
-          <div className="flex items-center gap-2 bg-gray-800 border border-gray-700 rounded-lg p-2">
+          <div className="flex flex-col sm:flex-row items-center gap-2 bg-gray-800 border border-gray-700 rounded-lg p-2 w-full sm:w-auto">
             <button
               onClick={goToPreviousDay}
-              className="px-3 py-2 rounded-md hover:bg-gray-700 transition-colors"
+              className="px-3 py-2 rounded-md hover:bg-gray-700 transition-colors w-full sm:w-auto"
               title="Previous Day"
             >
-              &lt;
+              &lt; Previous
             </button>
             <input
               type="date"
               value={formattedDate}
               onChange={handleDateChange}
               max={format(new Date(), "yyyy-MM-dd")}
-              className="bg-gray-800 text-white p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="bg-gray-800 text-white p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 w-full sm:w-auto"
             />
             <button
               onClick={goToToday}
-              className="px-3 py-2 rounded-md hover:bg-gray-700 transition-colors"
+              className="px-3 py-2 rounded-md hover:bg-gray-700 transition-colors w-full sm:w-auto"
               title="Go to Today"
             >
               Today

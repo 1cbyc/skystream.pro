@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import SiteFooter from "@/components/SiteFooter";
+import SocialDock from "@/components/SocialDock";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -9,14 +11,14 @@ export const metadata: Metadata = {
   description: "Unified NASA-powered Space Intelligence Platform",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        {children}
+        <SiteFooter />
+        <SocialDock />
+      </body>
     </html>
   );
 }

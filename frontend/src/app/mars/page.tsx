@@ -54,18 +54,18 @@ function MarsPage() {
   const {
     data,
     error,
-    isLoading,
     size,
     setSize,
     isValidating,
   } = useSWRInfinite<ApiResponse>(getKey, fetcher);
 
-  const photos: MarsPhoto[] = data ? data.flatMap(page => page.data) : [];
-
   const isLoadingInitialData = !data && !error;
   const isLoadingMore =
     isLoadingInitialData ||
     (size > 0 && data && typeof data[size - 1] === "undefined");
+  const isLoading = isLoadingInitialData || isLoadingMore;
+
+  const photos: MarsPhoto[] = data ? data.flatMap(page => page.data) : [];
 
   const isEmpty = data?.[0]?.data.length === 0;
   const isReachingEnd =

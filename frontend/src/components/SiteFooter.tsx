@@ -3,14 +3,16 @@
 export default function SiteFooter() {
   return (
     <footer className="border-t border-gray-800 bg-gray-900 text-gray-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-        <p className="text-sm">Built on NASA APIs with ❤️ by Isaac</p>
-        <nav className="flex items-center gap-3">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 py-6 flex flex-col gap-4">
+        <p className="text-center text-sm">
+          Built on NASA APIs with ❤️ by Isaac
+        </p>
+        <nav className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:justify-center">
           <a
             href="https://github.com/1cbyc/skystream.pro"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-3 py-2 rounded-md bg-gray-800 hover:bg-gray-700 transition-colors text-sm font-medium"
+            className="inline-flex items-center gap-2 px-4 py-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors text-sm font-medium w-full sm:w-auto justify-center"
             aria-label="Star this repository on GitHub"
             title="Star on GitHub"
           >
@@ -24,7 +26,7 @@ export default function SiteFooter() {
             href="https://x.com/1cbyc"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-3 py-2 rounded-md bg-gray-800 hover:bg-gray-700 transition-colors text-sm font-medium"
+            className="inline-flex items-center gap-2 px-4 py-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors text-sm font-medium w-full sm:w-auto justify-center"
             aria-label="Follow on X"
             title="Follow on X"
           >
@@ -38,7 +40,7 @@ export default function SiteFooter() {
             href="https://nsisong.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-3 py-2 rounded-md bg-gray-800 hover:bg-gray-700 transition-colors text-sm font-medium"
+            className="inline-flex items-center gap-2 px-4 py-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors text-sm font-medium w-full sm:w-auto justify-center"
             aria-label="Visit nsisong.com"
             title="Visit nsisong.com"
           >

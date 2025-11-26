@@ -4,8 +4,6 @@ import "./globals.css";
 import SiteFooter from "@/components/SiteFooter";
 import SocialDock from "@/components/SocialDock";
 
-const inter = Inter({ subsets: ["latin"] });
-
 export const metadata: Metadata = {
   title: "SkyStream.pro",
   description: "Unified NASA-powered Space Intelligence Platform",

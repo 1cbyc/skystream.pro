@@ -55,7 +55,7 @@ const fetcher = async (url: string): Promise<ApiResponse> => {
 
 // --- Main Page Component ---
 
-const ImpactPage = () => {
+function ImpactPage() {
   // State for the date range, defaulting to the current week.
   const [startDate, setStartDate] = useState(startOfWeek(new Date()));
   const [endDate, setEndDate] = useState(new Date());
@@ -67,8 +67,10 @@ const ImpactPage = () => {
   const {
     data: apiResponse,
     error,
-    isLoading,
+    isValidating,
   } = useSWR<ApiResponse>(apiUrl, fetcher);
+
+  const isLoading = Boolean(apiUrl) && isValidating && !apiResponse;
 
   // Dynamically import the map component to avoid SSR issues with Leaflet.
   const ImpactMap = useMemo(

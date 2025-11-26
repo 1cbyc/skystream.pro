@@ -34,7 +34,7 @@ const fetcher = async (url: string) => {
  * The MoodPage component displays the Astronomy Picture of the Day (APOD)
  * and its associated mood analysis. It allows users to select a date to view past APODs.
  */
-const MoodPage = () => {
+function MoodPage() {
   // State to manage the currently selected date. Default to today.
   const [currentDate, setCurrentDate] = useState(new Date());
 
@@ -48,8 +48,10 @@ const MoodPage = () => {
   const {
     data: apodData,
     error,
-    isLoading,
+    isValidating,
   } = useSWR<ApodData>(apiUrl, fetcher);
+
+  const isLoading = isValidating && !apodData;
 
   // Handlers for changing the date.
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {

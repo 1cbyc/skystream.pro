@@ -50,21 +50,26 @@ const getKey = (pageIndex: number, previousPageData: ApiResponse | null): string
 
 // --- Main Page Component ---
 
-const MarsPage = () => {
+function MarsPage() {
   const {
     data,
     error,
-    isLoading,
     size,
     setSize,
     isValidating,
   } = useSWRInfinite<ApiResponse>(getKey, fetcher);
 
-  // Flatten the array of pages into a single array of photos.
+  const isLoadingInitialData = !data && !error;
+  const isLoadingMore =
+    isLoadingInitialData ||
+    (size > 0 && data && typeof data[size - 1] === "undefined");
+  const isLoading = isLoadingInitialData || isLoadingMore;
+
   const photos: MarsPhoto[] = data ? data.flatMap(page => page.data) : [];
-  const isLoadingMore = isLoading || (size > 0 && data && typeof data[size - 1] === 'undefined');
+
   const isEmpty = data?.[0]?.data.length === 0;
-  const isReachingEnd = isEmpty || (data && data[data.length - 1]?.data.length < 25);
+  const isReachingEnd =
+    isEmpty || (data && data[data.length - 1]?.data.length < 25);
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4 sm:p-8">

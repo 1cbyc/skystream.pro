@@ -180,4 +180,3 @@ temp/
 *.log
 docs/
 !docs/system-design.txt
-v1/

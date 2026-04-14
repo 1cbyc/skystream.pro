@@ -29,13 +29,12 @@ The previous Laravel + Next prototype, docs, and service wiring are preserved in
 1. Copy the frontend env file:
 
 ```sh
-cp frontend/.env.example frontend/.env.local
+cp .env.example .env.local
 ```
 
 2. Install dependencies:
 
 ```sh
-cd frontend
 npm ci
 ```
 
@@ -56,7 +55,6 @@ http://localhost:3000
 Run these after changes:
 
 ```sh
-cd frontend
 npm run lint
 npm run build
 ```

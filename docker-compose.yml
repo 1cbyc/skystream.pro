@@ -3,10 +3,10 @@ version: "3.8"
 services:
   app:
     build:
-      context: ./frontend
+      context: .
       dockerfile: Dockerfile
     container_name: skystream_app
     ports:
       - "3000:3000"
     env_file:
-      - ./frontend/.env.example
+      - ./.env.local

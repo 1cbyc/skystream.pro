@@ -1,202 +1,182 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { addDays } from "date-fns";
+import { useMemo, useState } from "react";
 import useSWR from "swr";
-import { format, subDays, startOfWeek } from "date-fns";
-import dynamic from "next/dynamic";
-import type { LatLngExpression } from "leaflet";
+import DataState from "@/components/DataState";
+import { fetcher } from "@/lib/fetcher";
 
-// --- Type Definitions ---
-// These types should match the structure of the data coming from the backend API.
-
-interface EstimatedDiameter {
-  kilometers: {
-    estimated_diameter_min: number;
-    estimated_diameter_max: number;
-  };
-}
-
-interface CloseApproach {
-  close_approach_date: string;
-  relative_velocity: {
-    kilometers_per_hour: string;
-  };
-  miss_distance: {
-    kilometers: string;
-  };
-}
-
-interface NeoData {
-  id: number;
-  neo_id: string;
+type NeoItem = {
+  id: string;
   name: string;
-  estimated_diameter: EstimatedDiameter;
-  is_potentially_hazardous: boolean;
-  close_approach: CloseApproach;
-}
-
-interface ApiResponse {
-  current_page: number;
-  data: NeoData[];
-  total: number;
-}
-
-// --- Helper Functions ---
-
-const fetcher = async (url: string): Promise<ApiResponse> => {
-  const res = await fetch(url);
-  if (!res.ok) {
-    const errorData = await res.json();
-    throw new Error(errorData.message || "Failed to fetch NEO data.");
-  }
-  const result = await res.json();
-  return result.data; // The backend wraps paginated data in a 'data' property.
+  hazardous: boolean;
+  date: string;
+  missDistanceKm: number;
+  velocityKph: number;
+  diameterMinMeters: number;
+  diameterMaxMeters: number;
+  nasaJplUrl: string | null;
 };
 
-// --- Main Page Component ---
+type NeoPayload = {
+  count: number;
+  items: NeoItem[];
+};
 
-function ImpactPage() {
-  // State for the date range, defaulting to the current week.
-  const [startDate, setStartDate] = useState(startOfWeek(new Date()));
-  const [endDate, setEndDate] = useState(new Date());
-
-  // Construct the API URL based on the selected date range.
-  const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE}/impact/nearby?date_from=${format(startDate, "yyyy-MM-dd")}&date_to=${format(endDate, "yyyy-MM-dd")}`;
-
-  // Use SWR for data fetching.
-  const {
-    data: apiResponse,
-    error,
-    isValidating,
-  } = useSWR<ApiResponse>(apiUrl, fetcher);
-
-  const isLoading = Boolean(apiUrl) && isValidating && !apiResponse;
-
-  // Dynamically import the map component to avoid SSR issues with Leaflet.
-  const ImpactMap = useMemo(
-    () =>
-      dynamic(() => import("@/components/ImpactMap"), {
-        ssr: false,
-        loading: () => (
-          <div className="w-full h-full bg-gray-700 animate-pulse rounded-lg"></div>
-        ),
-      }),
-    [],
+export default function ImpactPage() {
+  const [startDate, setStartDate] = useState(new Date().toISOString().slice(0, 10));
+  const [endDate, setEndDate] = useState(
+    addDays(new Date(), 3).toISOString().slice(0, 10),
   );
 
+  const url = useMemo(
+    () => `/api/nasa/neo?startDate=${startDate}&endDate=${endDate}`,
+    [endDate, startDate],
+  );
+  const { data, error } = useSWR<NeoPayload>(url, fetcher);
+  const isLoading = !data && !error;
+
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-4 sm:p-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header and Date Range Picker */}
-        <header className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
+    <section className="section-frame py-12">
+      <div className="glass-panel rounded-[2.5rem] p-6 md:p-10">
+        <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
           <div>
-            <h1 className="text-3xl font-bold">NEOWS Impact Explorer</h1>
-            <p className="text-gray-400">
-              Tracking near-Earth objects and their close approaches.
+            <p className="text-xs uppercase tracking-[0.32em] text-cyan-200/70">
+              NeoWs watch
             </p>
+            <h1 className="mt-3 font-display text-4xl text-white md:text-5xl">
+              Near-Earth object tracking with better signal
+            </h1>
           </div>
-          <div className="flex items-center gap-2 bg-gray-800 border border-gray-700 rounded-lg p-2">
+          <div className="grid gap-3 md:grid-cols-2">
             <input
               type="date"
-              value={format(startDate, "yyyy-MM-dd")}
-              onChange={(e) => {
-                const newDate = new Date(e.target.value + "T00:00:00");
-                if (e.target.value && !isNaN(newDate.getTime())) {
-                  setStartDate(newDate);
-                }
-              }}
-              className="bg-gray-800 text-white p-2 rounded-md"
+              value={startDate}
+              onChange={(event) => setStartDate(event.target.value)}
+              className="field"
             />
-            <span className="text-gray-400">to</span>
             <input
               type="date"
-              value={format(endDate, "yyyy-MM-dd")}
-              onChange={(e) => {
-                const newDate = new Date(e.target.value + "T00:00:00");
-                if (e.target.value && !isNaN(newDate.getTime())) {
-                  setEndDate(newDate);
-                }
-              }}
-              max={format(new Date(), "yyyy-MM-dd")}
-              className="bg-gray-800 text-white p-2 rounded-md"
+              value={endDate}
+              onChange={(event) => setEndDate(event.target.value)}
+              className="field"
             />
           </div>
-        </header>
+        </div>
 
-        {/* Main Content Area */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column: Map */}
-          <div className="lg:col-span-2 h-[60vh] bg-gray-800/50 p-4 rounded-xl shadow-lg border border-gray-700">
-            <ImpactMap neos={apiResponse?.data} />
-          </div>
+        <div className="mt-8">
+          {isLoading ? (
+            <div className="grid gap-4 md:grid-cols-3">
+              <div className="metric-tile h-24 animate-pulse" />
+              <div className="metric-tile h-24 animate-pulse" />
+              <div className="metric-tile h-24 animate-pulse" />
+            </div>
+          ) : error ? (
+            <DataState
+              title="Asteroid telemetry unavailable"
+              description={error.message}
+              tone="error"
+            />
+          ) : data ? (
+            <>
+              <div className="grid gap-4 md:grid-cols-3">
+                <div className="metric-tile">
+                  <p className="text-xs uppercase tracking-[0.3em] text-slate-500">
+                    Objects in window
+                  </p>
+                  <p className="mt-3 font-display text-4xl text-white">
+                    {data.count}
+                  </p>
+                </div>
+                <div className="metric-tile">
+                  <p className="text-xs uppercase tracking-[0.3em] text-slate-500">
+                    Hazardous flagged
+                  </p>
+                  <p className="mt-3 font-display text-4xl text-white">
+                    {data.items.filter((item) => item.hazardous).length}
+                  </p>
+                </div>
+                <div className="metric-tile">
+                  <p className="text-xs uppercase tracking-[0.3em] text-slate-500">
+                    Closest pass
+                  </p>
+                  <p className="mt-3 font-display text-2xl text-white">
+                    {data.items[0]
+                      ? `${Math.round(data.items[0].missDistanceKm).toLocaleString()} km`
+                      : "No objects"}
+                  </p>
+                </div>
+              </div>
 
-          {/* Right Column: List of NEOs */}
-          <div className="lg:col-span-1 bg-gray-800/50 p-4 rounded-xl shadow-lg border border-gray-700 h-[60vh] overflow-y-auto">
-            <h2 className="text-xl font-bold mb-4">
-              Close Approaches ({apiResponse?.total ?? 0})
-            </h2>
-            {isLoading && <NeoListSkeleton />}
-            {error && <ErrorMessage message={error.message} />}
-            {apiResponse && <NeoList neos={apiResponse.data} />}
-          </div>
+              <div className="mt-8 grid gap-4 xl:grid-cols-2">
+                {data.items.slice(0, 12).map((item) => (
+                  <article
+                    key={`${item.id}-${item.date}`}
+                    className="rounded-[1.75rem] border border-white/10 bg-white/[0.03] p-5"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
+                          {item.date}
+                        </p>
+                        <h2 className="mt-3 font-display text-2xl text-white">
+                          {item.name}
+                        </h2>
+                      </div>
+                      <span
+                        className={`rounded-full px-3 py-1 text-xs uppercase tracking-[0.24em] ${
+                          item.hazardous
+                            ? "bg-red-400/20 text-red-100"
+                            : "bg-emerald-400/20 text-emerald-100"
+                        }`}
+                      >
+                        {item.hazardous ? "hazardous" : "tracked"}
+                      </span>
+                    </div>
+                    <div className="mt-5 grid gap-3 md:grid-cols-3">
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.24em] text-slate-500">
+                          Miss distance
+                        </p>
+                        <p className="mt-2 text-sm text-slate-100">
+                          {Math.round(item.missDistanceKm).toLocaleString()} km
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.24em] text-slate-500">
+                          Velocity
+                        </p>
+                        <p className="mt-2 text-sm text-slate-100">
+                          {Math.round(item.velocityKph).toLocaleString()} kph
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.24em] text-slate-500">
+                          Diameter
+                        </p>
+                        <p className="mt-2 text-sm text-slate-100">
+                          {Math.round(item.diameterMinMeters)} to{" "}
+                          {Math.round(item.diameterMaxMeters)} m
+                        </p>
+                      </div>
+                    </div>
+                    {item.nasaJplUrl ? (
+                      <a
+                        href={item.nasaJplUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="mt-5 inline-flex text-sm text-cyan-200 transition hover:text-cyan-100"
+                      >
+                        Open JPL profile
+                      </a>
+                    ) : null}
+                  </article>
+                ))}
+              </div>
+            </>
+          ) : null}
         </div>
       </div>
-    </div>
+    </section>
   );
-};
-
-// --- Child Components ---
-
-const NeoList = ({ neos }: { neos: NeoData[] }) => {
-  if (!neos || neos.length === 0) {
-    return (
-      <p className="text-gray-400">
-        No near-Earth objects found for the selected date range.
-      </p>
-    );
-  }
-
-  return (
-    <div className="flex flex-col gap-3">
-      {neos.map((neo) => (
-        <div
-          key={neo.neo_id}
-          className={`p-3 rounded-lg border ${neo.is_potentially_hazardous ? "border-red-500/50 bg-red-900/20" : "border-gray-700 bg-gray-800"}`}
-        >
-          <p className="font-bold text-white">{neo.name}</p>
-          <p className="text-sm text-gray-400">
-            Miss Distance:{" "}
-            {parseFloat(
-              neo.close_approach.miss_distance.kilometers,
-            ).toLocaleString("en-US", { maximumFractionDigits: 0 })}{" "}
-            km
-          </p>
-          <p className="text-xs text-gray-500">
-            Diameter: ~
-            {(
-              neo.estimated_diameter.kilometers.estimated_diameter_min * 1000
-            ).toFixed(0)}{" "}
-            m
-          </p>
-        </div>
-      ))}
-    </div>
-  );
-};
-
-const NeoListSkeleton = () => (
-  <div className="flex flex-col gap-3 animate-pulse">
-    {[...Array(5)].map((_, i) => (
-      <div key={i} className="p-3 rounded-lg bg-gray-700 h-16"></div>
-    ))}
-  </div>
-);
-
-const ErrorMessage = ({ message }: { message: string }) => (
-  <div className="p-4 bg-red-900/30 border border-red-700 rounded-lg text-center">
-    <p className="font-bold text-red-300">Error</p>
-    <p className="text-red-400 text-sm">{message}</p>
-  </div>
-);
-
-export default ImpactPage;
+}

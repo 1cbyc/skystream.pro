@@ -1,0 +1,182 @@
+# ========================
+# GENERAL OS / IDE
+# ========================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+*~
+
+# JetBrains IDEs
+.idea/
+*.iml
+*.iws
+out/
+
+# VS Code
+.vscode/
+.history/
+
+# ========================
+# LOGS & RUNTIME
+# ========================
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Diagnostic reports
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# REPL history
+.node_repl_history
+
+# ========================
+# NODE / FRONTEND
+# ========================
+# Dependency directories
+node_modules/
+jspm_packages/
+bower_components/
+web_modules/
+
+# Build outputs
+.next/
+out/
+.nuxt/
+dist/
+.cache/
+.parcel-cache/
+.vuepress/dist/
+.svelte-kit/
+**/.vitepress/dist/
+**/.vitepress/cache/
+.docusaurus/
+.serverless/
+.fusebox/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional npm/yarn caches
+.npm/
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# Coverage
+coverage/
+*.lcov
+.nyc_output
+
+# Grunt / gulp / parcel intermediate files
+.grunt/
+.cache/
+.parcel-cache/
+
+# Misc
+*.tgz
+.yarn-integrity
+.lock-wscript
+.tern-port
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# ========================
+# PHP / LARAVEL
+# ========================
+vendor/
+vendor-bin/
+composer.lock
+
+# Laravel specific
+/storage/*.key
+/storage/*.log
+/storage/debugbar/*
+/storage/framework/cache/data/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/bootstrap/cache/*.php
+
+# PHPUnit
+.phpunit.result.cache
+
+# ========================
+# DOCKER
+# ========================
+# Docker files
+docker-compose.override.yml
+*.env.docker
+**/docker-compose.override.yml
+**/.dockerignore
+
+# ========================
+# DATABASE / STORAGE
+# ========================
+# MySQL / Postgres / SQLite
+*.sql
+*.sqlite
+*.sqlite3
+
+# MinIO / S3 local storage
+/data/
+minio_data/
+
+# ========================
+# TEMP & SCRIPT FILES
+# ========================
+# Shell scripts
+*.sh
+auto.sh
+*.bat
+*.cmd
+
+# Temporary files
+*.tmp
+*.swp
+*.swo
+*.bak
+*.old
+
+# ========================
+# DOCUMENTATION
+# ========================
+# Generated docs
+docs/_build/
+docs/.sass-cache/
+
+# ========================
+# CUSTOM
+# ========================
+# Ignore custom logs and temp directories
+logs/
+tmp/
+temp/
+.idea/
+.DS_Store
+*.log
+docs/
+!docs/system-design.txt

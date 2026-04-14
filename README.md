@@ -1,65 +1,78 @@
 # SkyStream.pro
 
-**SkyStream.pro** is an open-source, unified NASA-powered Space Intelligence Platform.
+SkyStream.pro is now a full-stack NASA mission dashboard built on Next.js.
 
-The goal of this project is to build a modular web platform that aggregates NASA space and Earth data, enriches it with AI, and exposes highly visual, shareable features like the mood of the day, asteroid impact simulations, birthdate time capsules, a Mars photo curator, and more.
+The previous Laravel + Next prototype, docs, and service wiring are preserved in `v1/` exactly as a backup. The active app was rebuilt to make development and deployment simpler, while expanding NASA coverage into one coherent product surface.
 
-This platform is for space enthusiasts, educators, data journalists, and creative coders.
+## What The Rebuild Covers
 
-## Tech Stack
+- APOD explorer
+- NeoWs asteroid tracking
+- Mars Rover manifests and imagery
+- EPIC Earth imagery
+- NASA Earth assets lookup
+- EONET natural events
+- DONKI space weather
+- NASA Image and Video Library search
+- Exoplanet Archive browsing
+- A date-based NASA capsule generator
 
-The project is built with a modern, scalable technology stack:
+## Active Stack
 
-*   **Backend**: Laravel (PHP)
-*   **Frontend**: Next.js (React) with TypeScript & Tailwind CSS
-*   **Database**: MySQL & Redis
-*   **AI**: OpenAI for summarization and embeddings
-*   **Storage**: S3-compatible object storage (like MinIO)
-*   **Containerization**: Docker
-*   **CI/CD**: GitHub Actions
+- Next.js 14 App Router
+- TypeScript
+- Tailwind CSS
+- Next Route Handlers for NASA integrations
 
-## Getting Started
+## Local Development
 
-The entire development environment is containerized using Docker for consistency and ease of setup.
+1. Copy the frontend env file:
 
-### Prerequisites
+```sh
+cp frontend/.env.example frontend/.env.local
+```
 
-*   [Docker](https://www.docker.com/get-started) and [Docker Compose](https://docs.docker.com/compose/install/)
+2. Install dependencies:
 
-### Installation & Running
+```sh
+cd frontend
+npm ci
+```
 
-1.  **Clone the repository:**
-    ```sh
-    git clone https://github.com/1cbyc/skystream.pro.git
-    cd skystream.pro
-    ```
+3. Start the app:
 
-2.  **Configure Environment Variables:**
-    There are `.env.example` files in both the `backend/` and `frontend/` directories. Copy them to `.env` and fill in the required values, such as your NASA API Key and other service credentials.
-    ```sh
-    cp backend/.env.example backend/.env
-    cp frontend/.env.example frontend/.env
-    ```
+```sh
+npm run dev
+```
 
-3.  **Build and run the application:**
-    ```sh
-    docker-compose up --build -d
-    ```
+4. Open the site:
 
-4.  **Access the application:**
-    *   Frontend: [http://localhost:3000](http://localhost:3000)
-    *   Backend API: [http://localhost:8000](http://localhost:8000)
+```txt
+http://localhost:3000
+```
 
-## Documentation
+## Verification
 
-For a complete overview of the system architecture, data models, API contracts, and project roadmap, please see the documents in the `/docs` directory.
+Run these after changes:
 
-*   [Project Overview & System Design](./docs/project-overview.txt)
+```sh
+cd frontend
+npm run lint
+npm run build
+```
 
-## Contributing
+## Docker
 
-We welcome contributions! Please read our [CONTRIBUTING.md](./CONTRIBUTING.md) to learn about our development process, how to propose bugfixes and improvements, and how to build and test your changes.
+The root `docker-compose.yml` now runs the rebuilt Next.js app directly:
 
-## License
+```sh
+docker-compose up --build
+```
 
-This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
+## Legacy Backup
+
+Everything that existed before the rebuild is preserved under:
+
+```txt
+v1/
+```

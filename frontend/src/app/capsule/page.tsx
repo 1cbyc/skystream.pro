@@ -1,151 +1,176 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import useSWR from 'swr';
-import { format, parseISO } from 'date-fns';
+import { useState } from "react";
+import useSWR from "swr";
+import DataState from "@/components/DataState";
+import { fetcher } from "@/lib/fetcher";
 
-// --- Type Definitions ---
-// These types define the structure of the data we expect from the capsule API endpoint.
-
-interface ApodData {
-  title: string;
-  url: string;
-  explanation: string;
-  mood: string;
-  color_palette: string[];
-  apod_date: string;
-}
-
-interface CapsuleData {
-  apod: ApodData;
-  // This structure is extensible for future data like planetary positions.
-}
-
-// --- Helper Functions ---
-
-const fetcher = async (url: string): Promise<CapsuleData> => {
-  const res = await fetch(url);
-  if (!res.ok) {
-    const errorData = await res.json();
-    throw new Error(errorData.message || 'Failed to generate capsule.');
-  }
-  const result = await res.json();
-  return result.data;
+type CapsulePayload = {
+  date: string;
+  apod: {
+    title: string;
+    explanation: string;
+    imageUrl: string;
+  } | null;
+  asteroidCount: number;
+  notableApproaches: {
+    id: string;
+    name: string;
+    missDistanceKm: number;
+  }[];
+  events: {
+    id: string;
+    title: string;
+    categories: string[];
+  }[];
+  earth: {
+    date: string;
+    url: string | null;
+  } | null;
 };
 
-// --- Main Page Component ---
-
-const CapsulePage = () => {
-  // `dateInput` tracks the value in the date picker.
-  const [dateInput, setDateInput] = useState<string>('');
-  // `submittedDate` tracks the date the user has submitted, which triggers the API fetch.
-  const [submittedDate, setSubmittedDate] = useState<string | null>(null);
-
-  // The API URL is conditional on `submittedDate` being set.
-  const apiUrl = submittedDate
-    ? `${process.env.NEXT_PUBLIC_API_BASE}/capsule/birthday?date=${submittedDate}`
-    : null;
-
-  // SWR will only start fetching if `apiUrl` is not null.
-  const { data: capsuleData, error, isValidating } = useSWR<CapsuleData>(apiUrl, fetcher);
-  const isLoading = Boolean(apiUrl) && isValidating && !capsuleData;
-
-  const handleFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (dateInput) {
-      setSubmittedDate(dateInput);
-    }
-  };
+export default function CapsulePage() {
+  const [date, setDate] = useState(new Date().toISOString().slice(0, 10));
+  const { data, error } = useSWR<CapsulePayload>(
+    `/api/nasa/capsule?date=${date}`,
+    fetcher,
+  );
+  const isLoading = !data && !error;
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-4 sm:p-8">
-      <div className="max-w-4xl mx-auto">
-        {/* Header and Form Section */}
-        <header className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white">Capsule Generator</h1>
-          <p className="text-gray-400 mt-2">
-            Generate a &quot;space snapshot&quot; for any significant date, like your birthday.
-          </p>
-        </header>
-
-        <form
-          onSubmit={handleFormSubmit}
-          className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-8 bg-gray-800 border border-gray-700 rounded-lg p-4"
-        >
+    <section className="section-frame py-12">
+      <div className="glass-panel rounded-[2.5rem] p-6 md:p-10">
+        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.32em] text-cyan-200/70">
+              Date capsule
+            </p>
+            <h1 className="mt-3 font-display text-4xl text-white md:text-5xl">
+              Build a richer NASA snapshot around a meaningful date
+            </h1>
+          </div>
           <input
             type="date"
-            value={dateInput}
-            onChange={(e) => setDateInput(e.target.value)}
-            max={format(new Date(), 'yyyy-MM-dd')}
-            required
-            className="bg-gray-700 text-white p-3 rounded-md w-full sm:w-auto focus:outline-none focus:ring-2 focus:ring-purple-500"
+            value={date}
+            onChange={(event) => setDate(event.target.value)}
+            className="field max-w-xs"
           />
-          <button
-            type="submit"
-            className="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 transition-colors text-white font-bold py-3 px-6 rounded-md"
-            disabled={isLoading}
-          >
-            {isLoading ? 'Generating...' : 'Generate Capsule'}
-          </button>
-        </form>
+        </div>
 
-        {/* Content Display Area */}
-        <div className="bg-gray-800/50 p-4 sm:p-6 rounded-xl shadow-lg border border-gray-700 min-h-[50vh] flex items-center justify-center">
-          {!submittedDate && <InitialState />}
-          {isLoading && <LoadingState />}
-          {error && <ErrorState message={error.message} />}
-          {capsuleData && !isLoading && <CapsuleDisplay data={capsuleData} />}
+        <div className="mt-8">
+          {isLoading ? (
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="h-80 animate-pulse rounded-[2rem] bg-white/5" />
+              <div className="h-80 animate-pulse rounded-[2rem] bg-white/5" />
+            </div>
+          ) : error ? (
+            <DataState
+              title="Capsule generation failed"
+              description={error.message}
+              tone="error"
+            />
+          ) : data ? (
+            <div className="grid gap-6 xl:grid-cols-[1.1fr,0.9fr]">
+              <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5">
+                <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
+                  APOD
+                </p>
+                {data.apod ? (
+                  <>
+                    <img
+                      src={data.apod.imageUrl}
+                      alt={data.apod.title}
+                      className="mt-5 h-80 w-full rounded-[1.5rem] object-cover"
+                    />
+                    <h2 className="mt-5 font-display text-3xl text-white">
+                      {data.apod.title}
+                    </h2>
+                    <p className="mt-3 text-sm leading-8 text-slate-300">
+                      {data.apod.explanation}
+                    </p>
+                  </>
+                ) : (
+                  <DataState
+                    title="No APOD for this date"
+                    description="NASA did not return APOD media for the selected day."
+                    tone="empty"
+                  />
+                )}
+              </div>
+
+              <div className="space-y-6">
+                <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5">
+                  <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
+                    Asteroid traffic
+                  </p>
+                  <p className="mt-3 font-display text-4xl text-white">
+                    {data.asteroidCount}
+                  </p>
+                  <div className="mt-4 space-y-3">
+                    {data.notableApproaches.map((item) => (
+                      <div key={item.id} className="rounded-[1.25rem] border border-white/10 bg-black/20 p-4">
+                        <p className="font-display text-xl text-white">
+                          {item.name}
+                        </p>
+                        <p className="mt-2 text-sm text-slate-300">
+                          {Math.round(item.missDistanceKm).toLocaleString()} km
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5">
+                  <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
+                    Earth asset
+                  </p>
+                  {data.earth?.url ? (
+                    <a
+                      href={data.earth.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-4 inline-flex text-sm text-cyan-200"
+                    >
+                      Open matching Earth asset
+                    </a>
+                  ) : (
+                    <p className="mt-4 text-sm text-slate-400">
+                      No Earth imagery asset was returned for the selected date.
+                    </p>
+                  )}
+                </div>
+
+                <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5">
+                  <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
+                    Event context
+                  </p>
+                  <div className="mt-4 space-y-3">
+                    {data.events.length ? (
+                      data.events.map((event) => (
+                        <div
+                          key={event.id}
+                          className="rounded-[1.25rem] border border-white/10 bg-black/20 p-4"
+                        >
+                          <p className="font-display text-xl text-white">
+                            {event.title}
+                          </p>
+                          <p className="mt-2 text-sm text-slate-300">
+                            {event.categories.join(" • ")}
+                          </p>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-sm text-slate-400">
+                        No EONET events were recorded for this date window.
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : null}
         </div>
       </div>
-    </div>
+    </section>
   );
-};
-
-// --- Child Components for different states ---
-
-const InitialState = () => (
-  <div className="text-center text-gray-400">
-    <p>Select a date and click &quot;Generate Capsule&quot; to see your moment in space.</p>
-  </div>
-);
-
-const LoadingState = () => (
-  <div className="text-center text-gray-400 animate-pulse">
-    <p>Generating your space capsule...</p>
-    <div className="w-full h-64 bg-gray-700 rounded-lg mt-4"></div>
-  </div>
-);
-
-const ErrorState = ({ message }: { message: string }) => (
-  <div className="text-center p-6 bg-red-900/30 border border-red-700 rounded-lg">
-    <h2 className="text-xl font-bold text-red-300">Generation Failed</h2>
-    <p className="text-red-400 mt-2">{message}</p>
-  </div>
-);
-
-const CapsuleDisplay = ({ data }: { data: CapsuleData }) => (
-  <div className="w-full bg-gray-900 rounded-lg shadow-2xl p-6 border border-gray-700">
-    <header className="text-center border-b border-gray-700 pb-4 mb-4">
-      <p className="text-lg text-gray-300">Your Snapshot for</p>
-      <h2 className="text-3xl font-bold text-purple-400">
-        {format(parseISO(data.apod.apod_date), 'MMMM d, yyyy')}
-      </h2>
-    </header>
-
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-      <img
-        src={data.apod.url}
-        alt={data.apod.title}
-        className="rounded-md w-full h-auto object-cover aspect-square bg-gray-800"
-      />
-      <div className="flex flex-col gap-3">
-        <h3 className="text-2xl font-semibold text-white">{data.apod.title}</h3>
-        <p className="text-gray-400 text-sm leading-relaxed text-justify">
-          {data.apod.explanation}
-        </p>
-      </div>
-    </div>
-  </div>
-);
-
-export default CapsulePage;
+}

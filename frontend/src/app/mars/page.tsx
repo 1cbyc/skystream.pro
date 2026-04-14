@@ -1,154 +1,164 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import useSWRInfinite from 'swr/infinite';
+import { useMemo, useState } from "react";
+import useSWR from "swr";
+import DataState from "@/components/DataState";
+import { fetcher } from "@/lib/fetcher";
 
-// --- Type Definitions ---
-// Defines the structure of a single Mars photo object from our API.
-interface MarsPhoto {
-  id: number;
-  nasa_id: number;
-  sol: number;
-  camera: string;
-  img_src: string;
-  earth_date: string;
-  labels: string[] | null;
-}
-
-// Defines the structure of the paginated API response.
-interface ApiResponse {
-  current_page: number;
-  data: MarsPhoto[];
-  last_page: number;
-  total: number;
-}
-
-// --- Helper Functions ---
-
-const fetcher = async (url: string): Promise<ApiResponse> => {
-  const res = await fetch(url);
-  if (!res.ok) {
-    const errorData = await res.json();
-    throw new Error(errorData.message || 'Failed to fetch Mars photos.');
-  }
-  const result = await res.json();
-  return result.data; // Our backend wraps paginated data in a 'data' property.
+type MarsPayload = {
+  rover: string;
+  manifest: {
+    rover: string;
+    status: string;
+    maxSol: number;
+    launchDate: string;
+    landingDate: string;
+    totalPhotos: number;
+  };
+  photos: {
+    id: string;
+    rover: string;
+    camera: string;
+    imageUrl: string;
+    earthDate: string;
+    sol: number;
+  }[];
 };
 
-const getKey = (pageIndex: number, previousPageData: ApiResponse | null): string | null => {
-  // Reached the end of the data.
-  if (previousPageData && !previousPageData.data.length) return null;
+export default function MarsPage() {
+  const [rover, setRover] = useState("curiosity");
+  const [page, setPage] = useState(1);
 
-  // First page, no previous data.
-  if (pageIndex === 0) return `${process.env.NEXT_PUBLIC_API_BASE}/mars/photos?page=1`;
-
-  // We have previous data, so we can calculate the next page.
-  if (!previousPageData) return null; // Should not happen if pageIndex > 0
-  return `${process.env.NEXT_PUBLIC_API_BASE}/mars/photos?page=${previousPageData.current_page + 1}`;
-};
-
-
-// --- Main Page Component ---
-
-function MarsPage() {
-  const {
-    data,
-    error,
-    size,
-    setSize,
-    isValidating,
-  } = useSWRInfinite<ApiResponse>(getKey, fetcher);
-
-  const isLoadingInitialData = !data && !error;
-  const isLoadingMore =
-    isLoadingInitialData ||
-    (size > 0 && data && typeof data[size - 1] === "undefined");
-  const isLoading = isLoadingInitialData || isLoadingMore;
-
-  const photos: MarsPhoto[] = data ? data.flatMap(page => page.data) : [];
-
-  const isEmpty = data?.[0]?.data.length === 0;
-  const isReachingEnd =
-    isEmpty || (data && data[data.length - 1]?.data.length < 25);
+  const url = useMemo(
+    () => `/api/nasa/mars/photos?rover=${rover}&page=${page}`,
+    [page, rover],
+  );
+  const { data, error } = useSWR<MarsPayload>(url, fetcher);
+  const isLoading = !data && !error;
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-4 sm:p-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header and Filters Section */}
-        <header className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
+    <section className="section-frame py-12">
+      <div className="glass-panel rounded-[2.5rem] p-6 md:p-10">
+        <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
           <div>
-            <h1 className="text-3xl font-bold">Mars Explorer</h1>
-            <p className="text-gray-400">A curated gallery of photos from the Red Planet.</p>
+            <p className="text-xs uppercase tracking-[0.32em] text-cyan-200/70">
+              Mars desk
+            </p>
+            <h1 className="mt-3 font-display text-4xl text-white md:text-5xl">
+              Rover imagery, manifests, and mission rhythm
+            </h1>
           </div>
-          <div className="flex items-center gap-3">
-            {/* Placeholder for future filter controls */}
-            <select disabled className="bg-gray-800 border border-gray-700 rounded-lg p-2 text-gray-500 cursor-not-allowed">
-              <option>All Rovers</option>
-            </select>
-            <select disabled className="bg-gray-800 border border-gray-700 rounded-lg p-2 text-gray-500 cursor-not-allowed">
-              <option>All Cameras</option>
+          <div className="flex gap-3">
+            <select
+              value={rover}
+              onChange={(event) => {
+                setPage(1);
+                setRover(event.target.value);
+              }}
+              className="field min-w-[12rem]"
+            >
+              <option value="curiosity">Curiosity</option>
+              <option value="perseverance">Perseverance</option>
+              <option value="opportunity">Opportunity</option>
+              <option value="spirit">Spirit</option>
             </select>
           </div>
-        </header>
+        </div>
 
-        {/* Photo Gallery */}
-        {error && <ErrorMessage message={error.message} />}
-        {!error && (
-          <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {photos.map(photo => (
-                <PhotoCard key={photo.nasa_id} photo={photo} />
-              ))}
-              {isLoadingMore && <LoadingSkeleton />}
+        <div className="mt-8">
+          {isLoading ? (
+            <div className="grid gap-4 md:grid-cols-4">
+              <div className="metric-tile h-24 animate-pulse" />
+              <div className="metric-tile h-24 animate-pulse" />
+              <div className="metric-tile h-24 animate-pulse" />
+              <div className="metric-tile h-24 animate-pulse" />
             </div>
+          ) : error ? (
+            <DataState title="Mars feed unavailable" description={error.message} tone="error" />
+          ) : data ? (
+            <>
+              <div className="grid gap-4 md:grid-cols-4">
+                <div className="metric-tile">
+                  <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
+                    Rover
+                  </p>
+                  <p className="mt-3 font-display text-3xl text-white">
+                    {data.manifest.rover}
+                  </p>
+                </div>
+                <div className="metric-tile">
+                  <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
+                    Status
+                  </p>
+                  <p className="mt-3 font-display text-3xl text-white">
+                    {data.manifest.status}
+                  </p>
+                </div>
+                <div className="metric-tile">
+                  <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
+                    Max sol
+                  </p>
+                  <p className="mt-3 font-display text-3xl text-white">
+                    {data.manifest.maxSol.toLocaleString()}
+                  </p>
+                </div>
+                <div className="metric-tile">
+                  <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
+                    Total photos
+                  </p>
+                  <p className="mt-3 font-display text-3xl text-white">
+                    {data.manifest.totalPhotos.toLocaleString()}
+                  </p>
+                </div>
+              </div>
 
-            {/* Load More Button */}
-            <div className="text-center mt-8">
-              {!isReachingEnd && (
+              <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                {data.photos.map((photo) => (
+                  <article
+                    key={photo.id}
+                    className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.03]"
+                  >
+                    <img
+                      src={photo.imageUrl}
+                      alt={`${photo.rover} captured by ${photo.camera}`}
+                      className="h-72 w-full object-cover"
+                    />
+                    <div className="p-5">
+                      <p className="text-xs uppercase tracking-[0.24em] text-slate-500">
+                        Sol {photo.sol}
+                      </p>
+                      <h2 className="mt-3 font-display text-2xl text-white">
+                        {photo.camera}
+                      </h2>
+                      <p className="mt-2 text-sm text-slate-300">
+                        Earth date: {photo.earthDate}
+                      </p>
+                    </div>
+                  </article>
+                ))}
+              </div>
+
+              <div className="mt-8 flex gap-3">
                 <button
-                  onClick={() => setSize(size + 1)}
-                  disabled={isLoadingMore}
-                  className="bg-purple-600 hover:bg-purple-700 disabled:bg-gray-700 disabled:cursor-not-allowed transition-colors text-white font-bold py-3 px-8 rounded-lg"
+                  type="button"
+                  onClick={() => setPage((value) => Math.max(1, value - 1))}
+                  className="button-secondary"
+                  disabled={page === 1}
                 >
-                  {isLoadingMore ? 'Loading...' : 'Load More Photos'}
+                  Previous page
                 </button>
-              )}
-            </div>
-          </>
-        )}
+                <button
+                  type="button"
+                  onClick={() => setPage((value) => value + 1)}
+                  className="button-primary"
+                >
+                  Next page
+                </button>
+              </div>
+            </>
+          ) : null}
+        </div>
       </div>
-    </div>
+    </section>
   );
-};
-
-// --- Child Components ---
-
-const PhotoCard = ({ photo }: { photo: MarsPhoto }) => (
-  <div className="group relative block bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
-    <img
-      src={photo.img_src}
-      alt={`Mars Rover photo from sol ${photo.sol}`}
-      className="w-full h-full object-cover aspect-square transition-transform duration-300 group-hover:scale-105"
-      loading="lazy"
-    />
-    <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/80 to-transparent">
-      <p className="text-sm font-semibold text-white">Sol {photo.sol}</p>
-      <p className="text-xs text-gray-300">{photo.camera}</p>
-    </div>
-  </div>
-);
-
-const LoadingSkeleton = () => (
-  <>{[...Array(8)].map((_, i) => (
-    <div key={i} className="bg-gray-700 rounded-lg aspect-square animate-pulse"></div>
-  ))}</>
-);
-
-const ErrorMessage = ({ message }: { message: string }) => (
-  <div className="col-span-full text-center p-8 bg-red-900/30 border border-red-700 rounded-lg">
-    <h2 className="text-xl font-bold text-red-300">Could Not Load Photos</h2>
-    <p className="text-red-400 mt-2">{message}</p>
-  </div>
-);
-
-export default MarsPage;
+}

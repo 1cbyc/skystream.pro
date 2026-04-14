@@ -1,20 +1,30 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { IBM_Plex_Sans, Space_Grotesk } from "next/font/google";
 import "./globals.css";
-import SiteFooter from "@/components/SiteFooter";
-import SocialDock from "@/components/SocialDock";
+import AppFooter from "@/components/AppFooter";
+import AppHeader from "@/components/AppHeader";
 
-const inter = Inter({ subsets: ["latin"] });
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-display",
+});
+
+const ibmPlexSans = IBM_Plex_Sans({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-body",
+});
 
 export const metadata: Metadata = {
-  title: "SkyStream.pro",
-  description: "Unified NASA-powered Space Intelligence Platform",
+  title: "SkyStream.pro | NASA Mission Control",
+  description:
+    "A rebuilt full-stack NASA exploration platform spanning APOD, asteroids, Mars, Earth observation, solar weather, media archives, and exoplanets.",
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#111827",
+  themeColor: "#040712",
 };
 
 export default function RootLayout({
@@ -24,10 +34,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} safe-top safe-right safe-bottom safe-left`}>
-        {children}
-        <SiteFooter />
-        <SocialDock />
+      <body
+        className={`${spaceGrotesk.variable} ${ibmPlexSans.variable} min-h-screen bg-[#040712] font-body text-slate-100 antialiased`}
+      >
+        <div className="site-shell">
+          <AppHeader />
+          <main>{children}</main>
+          <AppFooter />
+        </div>
       </body>
     </html>
   );

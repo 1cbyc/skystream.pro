@@ -109,6 +109,9 @@ export default function HomePage() {
                   <p className="mt-4 font-display text-4xl text-white">
                     {data?.asteroidCount ?? 0}
                   </p>
+                  <p className="mt-2 text-xs text-slate-500">
+                    Live NeoWs objects in today&apos;s feed
+                  </p>
                 </div>
                 <div className="metric-tile">
                   <p className="text-xs uppercase tracking-[0.3em] text-slate-400">
@@ -117,13 +120,25 @@ export default function HomePage() {
                   <p className="mt-4 font-display text-4xl text-white">
                     {data?.marsPhotoCount ?? 0}
                   </p>
+                  <p className="mt-2 text-xs text-slate-500">
+                    Current deck from rover APIs or archive fallback
+                  </p>
                 </div>
                 <div className="metric-tile">
                   <p className="text-xs uppercase tracking-[0.3em] text-slate-400">
                     Solar alerts
                   </p>
-                  <p className="mt-4 font-display text-4xl text-white">
-                    {data?.solarAlerts ?? 0}
+                  {data?.solarAlerts === null ? (
+                    <p className="mt-4 font-display text-2xl text-white">
+                      Live feed down
+                    </p>
+                  ) : (
+                    <p className="mt-4 font-display text-4xl text-white">
+                      {data?.solarAlerts ?? 0}
+                    </p>
+                  )}
+                  <p className="mt-2 text-xs text-slate-500">
+                    DONKI CME, flare, and geomagnetic storm count
                   </p>
                 </div>
                 <div className="metric-tile">
@@ -132,6 +147,9 @@ export default function HomePage() {
                   </p>
                   <p className="mt-4 font-display text-4xl text-white">
                     {data?.activeEvents ?? 0}
+                  </p>
+                  <p className="mt-2 text-xs text-slate-500">
+                    Open EONET events across Earth systems
                   </p>
                 </div>
               </>

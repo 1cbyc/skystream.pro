@@ -21,7 +21,7 @@ export default function MissionCard({
       <p className="text-xs uppercase tracking-[0.32em] text-cyan-200/70">
         {eyebrow}
       </p>
-      <h3 className="mt-4 font-display text-xl text-white md:text-2xl">{title}</h3>
+      <h3 className="mt-4 font-display text-lg sm:text-xl md:text-2xl">{title}</h3>
       <p className="mt-3 text-sm leading-6 text-slate-300 md:leading-7">{description}</p>
     </Link>
   );

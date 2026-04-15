@@ -30,7 +30,7 @@ export default function MoodPage() {
             <p className="text-xs uppercase tracking-[0.32em] text-cyan-200/70">
               APOD explorer
             </p>
-            <h1 className="mt-3 font-display text-3xl text-white md:text-5xl">
+            <h1 className="mt-3 font-display text-2xl sm:text-3xl md:text-5xl">
               Astronomy Picture of the Day, rebuilt as a flagship feature
             </h1>
           </div>
@@ -45,14 +45,14 @@ export default function MoodPage() {
 
         <div className="mt-8">
           {isLoading ? (
-            <div className="grid gap-6 lg:grid-cols-[1.2fr,0.8fr]">
+            <div className="grid gap-6 grid-cols-1 lg:grid-cols-[1.2fr,0.8fr]">
               <div className="h-[28rem] animate-pulse rounded-[2rem] bg-white/5" />
               <div className="h-[28rem] animate-pulse rounded-[2rem] bg-white/5" />
             </div>
           ) : error ? (
             <DataState title="APOD is unavailable" description={error.message} tone="error" />
           ) : data ? (
-            <div className="grid gap-6 lg:grid-cols-[1.15fr,0.85fr]">
+            <div className="grid gap-6 grid-cols-1 lg:grid-cols-[1.15fr,0.85fr]">
               <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-black/30">
                 {data.mediaType === "image" ? (
                   <img
@@ -72,7 +72,7 @@ export default function MoodPage() {
                 <p className="text-sm uppercase tracking-[0.28em] text-slate-400">
                   {data.date}
                 </p>
-                <h2 className="mt-4 font-display text-3xl text-white">
+                <h2 className="mt-4 font-display text-2xl sm:text-3xl text-white">
                   {data.title}
                 </h2>
                 {data.copyright ? (

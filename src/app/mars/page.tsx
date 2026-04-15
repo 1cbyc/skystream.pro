@@ -44,7 +44,7 @@ export default function MarsPage() {
             <p className="text-xs uppercase tracking-[0.32em] text-cyan-200/70">
               Mars desk
             </p>
-            <h1 className="mt-3 font-display text-3xl text-white md:text-5xl">
+            <h1 className="mt-3 font-display text-2xl sm:text-3xl md:text-5xl">
               Rover imagery, manifests, and mission rhythm
             </h1>
           </div>
@@ -67,7 +67,7 @@ export default function MarsPage() {
 
         <div className="mt-8">
           {isLoading ? (
-            <div className="grid gap-4 md:grid-cols-4">
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
               <div className="metric-tile h-24 animate-pulse" />
               <div className="metric-tile h-24 animate-pulse" />
               <div className="metric-tile h-24 animate-pulse" />
@@ -77,12 +77,12 @@ export default function MarsPage() {
             <DataState title="Mars feed unavailable" description={error.message} tone="error" />
           ) : data ? (
             <>
-              <div className="grid gap-4 md:grid-cols-4">
+              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
                 <div className="metric-tile">
                   <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
                     Rover
                   </p>
-                  <p className="mt-3 font-display text-3xl text-white">
+                  <p className="mt-3 font-display text-xl sm:text-2xl md:text-3xl text-white">
                     {data.manifest.rover}
                   </p>
                 </div>
@@ -90,7 +90,7 @@ export default function MarsPage() {
                   <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
                     Status
                   </p>
-                  <p className="mt-3 font-display text-3xl text-white">
+                  <p className="mt-3 font-display text-xl sm:text-2xl md:text-3xl text-white">
                     {data.manifest.status}
                   </p>
                 </div>
@@ -98,7 +98,7 @@ export default function MarsPage() {
                   <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
                     Max sol
                   </p>
-                  <p className="mt-3 font-display text-3xl text-white">
+                  <p className="mt-3 font-display text-xl sm:text-2xl md:text-3xl text-white">
                     {data.manifest.maxSol.toLocaleString()}
                   </p>
                 </div>
@@ -106,7 +106,7 @@ export default function MarsPage() {
                   <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
                     Total photos
                   </p>
-                  <p className="mt-3 font-display text-3xl text-white">
+                  <p className="mt-3 font-display text-xl sm:text-2xl md:text-3xl text-white">
                     {data.manifest.totalPhotos.toLocaleString()}
                   </p>
                 </div>

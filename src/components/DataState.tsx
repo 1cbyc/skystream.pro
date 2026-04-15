@@ -18,7 +18,7 @@ export default function DataState({
 
   return (
     <div className={`rounded-2xl border p-4 md:rounded-3xl md:p-6 ${toneClass}`}>
-      <p className="font-display text-lg md:text-xl">{title}</p>
+      <p className="font-display text-base sm:text-lg md:text-xl">{title}</p>
       {description ? <p className="mt-2 text-sm opacity-80">{description}</p> : null}
     </div>
   );

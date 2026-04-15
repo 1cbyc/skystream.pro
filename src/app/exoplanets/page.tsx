@@ -29,7 +29,7 @@ export default function ExoplanetsPage() {
         <p className="text-xs uppercase tracking-[0.32em] text-cyan-200/70">
           Exoplanet archive
         </p>
-        <h1 className="mt-3 font-display text-3xl text-white md:text-5xl">
+        <h1 className="mt-3 font-display text-2xl sm:text-3xl md:text-5xl">
           Recent exoplanet discoveries with quick discovery context
         </h1>
 
@@ -44,12 +44,12 @@ export default function ExoplanetsPage() {
             />
           ) : data ? (
             <>
-              <div className="grid gap-4 md:grid-cols-3">
+              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
                 <div className="metric-tile">
                   <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
                     Records loaded
                   </p>
-                  <p className="mt-3 font-display text-4xl text-white">
+                  <p className="mt-3 font-display text-2xl sm:text-3xl md:text-4xl text-white">
                     {data.length}
                   </p>
                 </div>
@@ -57,7 +57,7 @@ export default function ExoplanetsPage() {
                   <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
                     Newest discovery year
                   </p>
-                  <p className="mt-3 font-display text-4xl text-white">
+                  <p className="mt-3 font-display text-2xl sm:text-3xl md:text-4xl text-white">
                     {Math.max(...data.map((item) => item.year))}
                   </p>
                 </div>
@@ -65,7 +65,7 @@ export default function ExoplanetsPage() {
                   <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
                     Discovery methods
                   </p>
-                  <p className="mt-3 font-display text-4xl text-white">
+                  <p className="mt-3 font-display text-2xl sm:text-3xl md:text-4xl text-white">
                     {new Set(data.map((item) => item.method)).size}
                   </p>
                 </div>

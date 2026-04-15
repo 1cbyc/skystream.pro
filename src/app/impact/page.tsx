@@ -44,11 +44,11 @@ export default function ImpactPage() {
             <p className="text-xs uppercase tracking-[0.32em] text-cyan-200/70">
               NeoWs watch
             </p>
-            <h1 className="mt-3 font-display text-3xl text-white md:text-5xl">
+            <h1 className="mt-3 font-display text-2xl sm:text-3xl md:text-5xl">
               Near-Earth object tracking with better signal
             </h1>
           </div>
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="grid gap-3 grid-cols-1 sm:grid-cols-2">
             <input
               type="date"
               value={startDate}
@@ -66,7 +66,7 @@ export default function ImpactPage() {
 
         <div className="mt-8">
           {isLoading ? (
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
               <div className="metric-tile h-24 animate-pulse" />
               <div className="metric-tile h-24 animate-pulse" />
               <div className="metric-tile h-24 animate-pulse" />
@@ -79,7 +79,7 @@ export default function ImpactPage() {
             />
           ) : data ? (
             <>
-              <div className="grid gap-4 md:grid-cols-3">
+              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
                 <div className="metric-tile">
                   <p className="text-xs uppercase tracking-[0.3em] text-slate-500">
                     Objects in window
@@ -100,7 +100,7 @@ export default function ImpactPage() {
                   <p className="text-xs uppercase tracking-[0.3em] text-slate-500">
                     Closest pass
                   </p>
-                  <p className="mt-3 font-display text-2xl text-white">
+                  <p className="mt-3 font-display text-lg sm:text-xl md:text-2xl text-white">
                     {data.items[0]
                       ? `${Math.round(data.items[0].missDistanceKm).toLocaleString()} km`
                       : "No objects"}

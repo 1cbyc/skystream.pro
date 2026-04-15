@@ -52,17 +52,17 @@ export default function EarthPage() {
         <p className="text-xs uppercase tracking-[0.32em] text-cyan-200/70">
           Earth observation
         </p>
-        <h1 className="mt-3 font-display text-3xl text-white md:text-5xl">
+        <h1 className="mt-3 font-display text-2xl sm:text-3xl md:text-5xl">
           EPIC frames, Earth assets, and natural event watchlists
         </h1>
 
-        <div className="mt-8 grid gap-6 xl:grid-cols-[1.1fr,0.9fr]">
+        <div className="mt-8 grid gap-6 grid-cols-1 xl:grid-cols-[1.1fr,0.9fr]">
           <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5">
               <div className="flex items-center justify-between gap-4">
-              <h2 className="font-display text-2xl text-white">DSCOVR EPIC</h2>
+              <h2 className="font-display text-xl sm:text-2xl text-white">DSCOVR EPIC</h2>
             </div>
             {epicLoading ? (
-              <div className="mt-5 grid gap-4 md:grid-cols-2">
+              <div className="mt-5 grid gap-4 grid-cols-1 md:grid-cols-2">
                 <div className="h-56 animate-pulse rounded-[1.5rem] bg-white/5" />
                 <div className="h-56 animate-pulse rounded-[1.5rem] bg-white/5" />
               </div>
@@ -71,7 +71,7 @@ export default function EarthPage() {
                 <DataState title="EPIC unavailable" description={epic.error.message} tone="error" />
               </div>
             ) : (
-              <div className="mt-5 grid gap-4 md:grid-cols-2">
+              <div className="mt-5 grid gap-4 grid-cols-1 md:grid-cols-2">
                 {(epic.data || []).map((frame) => (
                   <article
                     key={frame.id}
@@ -98,7 +98,7 @@ export default function EarthPage() {
 
           <div className="space-y-6">
             <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5">
-              <h2 className="font-display text-2xl text-white">
+              <h2 className="font-display text-xl sm:text-2xl text-white">
                 Earth asset lookup
               </h2>
               <div className="mt-5 grid gap-3">
@@ -159,7 +159,7 @@ export default function EarthPage() {
             </div>
 
             <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5">
-              <h2 className="font-display text-2xl text-white">Live EONET events</h2>
+              <h2 className="font-display text-xl sm:text-2xl text-white">Live EONET events</h2>
               <div className="mt-5 space-y-3">
                 {(events.data?.events || []).map((event) => (
                   <div

@@ -29,7 +29,7 @@ export default function SpaceWeatherPage() {
             <p className="text-xs uppercase tracking-[0.32em] text-cyan-200/70">
               DONKI digest
             </p>
-            <h1 className="mt-3 font-display text-3xl text-white md:text-5xl">
+            <h1 className="mt-3 font-display text-2xl sm:text-3xl md:text-5xl">
               Solar weather in a cleaner operations format
             </h1>
           </div>
@@ -45,7 +45,7 @@ export default function SpaceWeatherPage() {
 
         <div className="mt-8">
           {isLoading ? (
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
               <div className="metric-tile h-24 animate-pulse" />
               <div className="metric-tile h-24 animate-pulse" />
               <div className="metric-tile h-24 animate-pulse" />
@@ -58,12 +58,12 @@ export default function SpaceWeatherPage() {
             />
           ) : data ? (
             <>
-              <div className="grid gap-4 md:grid-cols-3">
+              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
                 <div className="metric-tile">
                   <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
                     Coronal mass ejections
                   </p>
-                  <p className="mt-3 font-display text-4xl text-white">
+                  <p className="mt-3 font-display text-2xl sm:text-3xl md:text-4xl text-white">
                     {data.cmes.length}
                   </p>
                 </div>
@@ -71,7 +71,7 @@ export default function SpaceWeatherPage() {
                   <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
                     Solar flares
                   </p>
-                  <p className="mt-3 font-display text-4xl text-white">
+                  <p className="mt-3 font-display text-2xl sm:text-3xl md:text-4xl text-white">
                     {data.flares.length}
                   </p>
                 </div>
@@ -79,15 +79,15 @@ export default function SpaceWeatherPage() {
                   <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
                     Geomagnetic storms
                   </p>
-                  <p className="mt-3 font-display text-4xl text-white">
+                  <p className="mt-3 font-display text-2xl sm:text-3xl md:text-4xl text-white">
                     {data.storms.length}
                   </p>
                 </div>
               </div>
 
-              <div className="mt-8 grid gap-4 xl:grid-cols-3">
+              <div className="mt-8 grid gap-4 grid-cols-1 md:grid-cols-2 xl:grid-cols-3">
                 <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5">
-                  <h2 className="font-display text-2xl text-white">CMEs</h2>
+                  <h2 className="font-display text-xl sm:text-2xl text-white">CMEs</h2>
                   <div className="mt-5 space-y-3">
                     {data.cmes.map((item, index) => (
                       <div key={`${item.activityID || "cme"}-${index}`} className="rounded-[1.25rem] border border-white/10 bg-black/20 p-4">
@@ -100,7 +100,7 @@ export default function SpaceWeatherPage() {
                   </div>
                 </div>
                 <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5">
-                  <h2 className="font-display text-2xl text-white">Flares</h2>
+                  <h2 className="font-display text-xl sm:text-2xl text-white">Flares</h2>
                   <div className="mt-5 space-y-3">
                     {data.flares.map((item, index) => (
                       <div key={`${item.flrID || "flare"}-${index}`} className="rounded-[1.25rem] border border-white/10 bg-black/20 p-4">
@@ -115,7 +115,7 @@ export default function SpaceWeatherPage() {
                   </div>
                 </div>
                 <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5">
-                  <h2 className="font-display text-2xl text-white">Storms</h2>
+                  <h2 className="font-display text-xl sm:text-2xl text-white">Storms</h2>
                   <div className="mt-5 space-y-3">
                     {data.storms.map((item, index) => (
                       <div key={`${item.gstID || "storm"}-${index}`} className="rounded-[1.25rem] border border-white/10 bg-black/20 p-4">

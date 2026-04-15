@@ -84,7 +84,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="mt-10 grid gap-4 md:grid-cols-4">
+          <div className="mt-10 grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
             {isLoading ? (
               <>
                 <div className="metric-tile h-28 animate-pulse" />
@@ -106,7 +106,7 @@ export default function HomePage() {
                   <p className="text-xs uppercase tracking-[0.3em] text-slate-400">
                     Asteroids today
                   </p>
-                  <p className="mt-4 font-display text-4xl text-white">
+                  <p className="mt-4 font-display text-2xl sm:text-3xl md:text-4xl text-white">
                     {data?.asteroidCount ?? 0}
                   </p>
                   <p className="mt-2 text-xs text-slate-500">
@@ -117,7 +117,7 @@ export default function HomePage() {
                   <p className="text-xs uppercase tracking-[0.3em] text-slate-400">
                     Mars photos loaded
                   </p>
-                  <p className="mt-4 font-display text-4xl text-white">
+                  <p className="mt-4 font-display text-2xl sm:text-3xl md:text-4xl text-white">
                     {data?.marsPhotoCount ?? 0}
                   </p>
                   <p className="mt-2 text-xs text-slate-500">
@@ -129,9 +129,9 @@ export default function HomePage() {
                     Solar alerts
                   </p>
                   {data?.solarAlerts === null ? (
-                    <p className="mt-4 font-display text-2xl text-white">
-                      Live feed down
-                    </p>
+                  <p className="mt-4 font-display text-lg sm:text-xl md:text-2xl text-white">
+                    Still loading solar alerts...
+                  </p>
                   ) : (
                     <p className="mt-4 font-display text-4xl text-white">
                       {data?.solarAlerts ?? 0}
@@ -145,9 +145,9 @@ export default function HomePage() {
                   <p className="text-xs uppercase tracking-[0.3em] text-slate-400">
                     Active Earth events
                   </p>
-                  <p className="mt-4 font-display text-4xl text-white">
-                    {data?.activeEvents ?? 0}
-                  </p>
+                  <p className="mt-4 font-display text-2xl sm:text-3xl md:text-4xl text-white">
+                      {data?.activeEvents ?? 0}
+                    </p>
                   <p className="mt-2 text-xs text-slate-500">
                     Open EONET events across Earth systems
                   </p>
@@ -169,7 +169,7 @@ export default function HomePage() {
             </h2>
           </div>
         </div>
-        <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-8 grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {missionCards.map((card) => (
             <MissionCard key={card.href} {...card} />
           ))}
@@ -182,7 +182,7 @@ export default function HomePage() {
             APOD spotlight
           </p>
           {data?.apod ? (
-            <div className="mt-6 grid gap-6 lg:grid-cols-[1.15fr,0.85fr]">
+            <div className="mt-6 grid gap-6 grid-cols-1 lg:grid-cols-[1.15fr,0.85fr]">
               <div className="overflow-hidden rounded-[1.5rem] border border-white/10 bg-black/30">
                 <img
                   src={data.apod.imageUrl}

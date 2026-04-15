@@ -37,11 +37,11 @@ export default function LibraryPage() {
             <p className="text-xs uppercase tracking-[0.32em] text-cyan-200/70">
               NASA archive
             </p>
-            <h1 className="mt-3 font-display text-3xl text-white md:text-5xl">
+            <h1 className="mt-3 font-display text-2xl sm:text-3xl md:text-5xl">
               Search the NASA image and video library from the app
             </h1>
           </div>
-          <div className="grid w-full gap-3 md:grid-cols-[minmax(0,20rem),12rem] xl:w-auto">
+          <div className="grid w-full gap-3 grid-cols-1 sm:grid-cols-2 md:grid-cols-[minmax(0,20rem),12rem] xl:w-auto">
             <input
               type="text"
               value={query}
@@ -80,7 +80,7 @@ export default function LibraryPage() {
                 <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
                   Total hits
                 </p>
-                <p className="mt-3 font-display text-4xl text-white">
+                <p className="mt-3 font-display text-2xl sm:text-3xl md:text-4xl text-white">
                   {data.totalHits.toLocaleString()}
                 </p>
               </div>
@@ -105,7 +105,7 @@ export default function LibraryPage() {
                       <p className="text-xs uppercase tracking-[0.24em] text-slate-500">
                         {item.center || item.mediaType}
                       </p>
-                      <h2 className="mt-3 break-words font-display text-2xl text-white">
+                      <h2 className="mt-3 break-words font-display text-xl sm:text-2xl text-white">
                         {item.title}
                       </h2>
                       <p className="mt-3 line-clamp-4 text-sm leading-7 text-slate-300">

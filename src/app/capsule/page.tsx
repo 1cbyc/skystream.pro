@@ -45,7 +45,7 @@ export default function CapsulePage() {
             <p className="text-xs uppercase tracking-[0.32em] text-cyan-200/70">
               Date capsule
             </p>
-            <h1 className="mt-3 font-display text-3xl text-white md:text-5xl">
+            <h1 className="mt-3 font-display text-2xl sm:text-3xl md:text-5xl">
               Build a richer NASA snapshot around a meaningful date
             </h1>
           </div>
@@ -59,7 +59,7 @@ export default function CapsulePage() {
 
         <div className="mt-8">
           {isLoading ? (
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
               <div className="h-80 animate-pulse rounded-[2rem] bg-white/5" />
               <div className="h-80 animate-pulse rounded-[2rem] bg-white/5" />
             </div>
@@ -70,7 +70,7 @@ export default function CapsulePage() {
               tone="error"
             />
           ) : data ? (
-            <div className="grid gap-6 xl:grid-cols-[1.1fr,0.9fr]">
+            <div className="grid gap-6 grid-cols-1 xl:grid-cols-[1.1fr,0.9fr]">
               <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5">
                 <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
                   APOD
@@ -82,7 +82,7 @@ export default function CapsulePage() {
                       alt={data.apod.title}
                       className="mt-5 h-80 w-full rounded-[1.5rem] object-cover"
                     />
-                    <h2 className="mt-5 break-words font-display text-3xl text-white">
+                    <h2 className="mt-5 break-words font-display text-2xl sm:text-3xl text-white">
                       {data.apod.title}
                     </h2>
                     <p className="mt-3 text-sm leading-8 text-slate-300">
@@ -103,7 +103,7 @@ export default function CapsulePage() {
                   <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
                     Asteroid traffic
                   </p>
-                  <p className="mt-3 font-display text-4xl text-white">
+                  <p className="mt-3 font-display text-2xl sm:text-3xl md:text-4xl text-white">
                     {data.asteroidCount}
                   </p>
                   <div className="mt-4 space-y-3">

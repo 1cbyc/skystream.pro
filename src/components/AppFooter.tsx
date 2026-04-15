@@ -5,7 +5,7 @@ export default function AppFooter() {
         <p className="font-display text-base tracking-[0.12em] text-slate-100">
           SkyStream.pro is live.
         </p>
-        <p>
+        <p className="max-w-4xl leading-7">
           Major NASA coverage including APOD, NeoWs, Mars Rover Photos, EPIC, Earth Assets, DONKI, EONET, the NASA Image and Video Library, and the Exoplanet Archive.
         </p>
         <p>

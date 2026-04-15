@@ -45,7 +45,7 @@ export default function CapsulePage() {
             <p className="text-xs uppercase tracking-[0.32em] text-cyan-200/70">
               Date capsule
             </p>
-            <h1 className="mt-3 font-display text-4xl text-white md:text-5xl">
+            <h1 className="mt-3 font-display text-3xl text-white md:text-5xl">
               Build a richer NASA snapshot around a meaningful date
             </h1>
           </div>
@@ -53,7 +53,7 @@ export default function CapsulePage() {
             type="date"
             value={date}
             onChange={(event) => setDate(event.target.value)}
-            className="field max-w-xs"
+            className="field w-full sm:max-w-xs"
           />
         </div>
 
@@ -82,7 +82,7 @@ export default function CapsulePage() {
                       alt={data.apod.title}
                       className="mt-5 h-80 w-full rounded-[1.5rem] object-cover"
                     />
-                    <h2 className="mt-5 font-display text-3xl text-white">
+                    <h2 className="mt-5 break-words font-display text-3xl text-white">
                       {data.apod.title}
                     </h2>
                     <p className="mt-3 text-sm leading-8 text-slate-300">
@@ -109,7 +109,7 @@ export default function CapsulePage() {
                   <div className="mt-4 space-y-3">
                     {data.notableApproaches.map((item) => (
                       <div key={item.id} className="rounded-[1.25rem] border border-white/10 bg-black/20 p-4">
-                        <p className="font-display text-xl text-white">
+                        <p className="break-words font-display text-xl text-white">
                           {item.name}
                         </p>
                         <p className="mt-2 text-sm text-slate-300">
@@ -151,7 +151,7 @@ export default function CapsulePage() {
                           key={event.id}
                           className="rounded-[1.25rem] border border-white/10 bg-black/20 p-4"
                         >
-                          <p className="font-display text-xl text-white">
+                          <p className="break-words font-display text-xl text-white">
                             {event.title}
                           </p>
                           <p className="mt-2 text-sm text-slate-300">

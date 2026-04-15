@@ -12,7 +12,7 @@ export type DashboardPayload = {
   asteroidCount: number;
   marsPhotoCount: number;
   epicFrames: number;
-  solarAlerts: number;
+  solarAlerts: number | null;
   activeEvents: number;
   exoplanetCount: number;
   libraryHighlights: Awaited<ReturnType<typeof searchNasaLibrary>>["items"];
@@ -461,7 +461,7 @@ export async function buildDashboard(): Promise<DashboardPayload> {
         ? weather.value.cmes.length +
           weather.value.flares.length +
           weather.value.storms.length
-        : 0,
+        : null,
     activeEvents: events.status === "fulfilled" ? events.value.count : 0,
     exoplanetCount: exoplanets.status === "fulfilled" ? exoplanets.value.length : 0,
     libraryHighlights:

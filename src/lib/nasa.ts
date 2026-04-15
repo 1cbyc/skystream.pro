@@ -388,6 +388,8 @@ export async function searchNasaLibrary(options?: {
       previewUrl: preview?.href ? String(preview.href) : null,
       dateCreated: String(data.date_created || ""),
       center: data.center ? String(data.center) : null,
+      keywords: getArray<string>(data.keywords),
+      assetManifestUrl: item.href ? String(item.href) : null,
     };
   });
 

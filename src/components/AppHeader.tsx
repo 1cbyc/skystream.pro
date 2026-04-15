@@ -5,12 +5,13 @@ import { usePathname } from "next/navigation";
 
 const links = [
   { href: "/", label: "Mission Control" },
+  { href: "/artemis", label: "Artemis" },
   { href: "/mood", label: "APOD" },
   { href: "/impact", label: "Asteroids" },
   { href: "/mars", label: "Mars" },
   { href: "/earth", label: "Earth" },
   { href: "/space-weather", label: "Solar Weather" },
-  { href: "/library", label: "Media Library" },
+  { href: "/archive", label: "Archive" },
   { href: "/exoplanets", label: "Exoplanets" },
   { href: "/capsule", label: "Capsule" },
 ];

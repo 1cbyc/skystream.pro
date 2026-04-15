@@ -15,19 +15,24 @@ type LibraryPayload = {
     previewUrl: string | null;
     dateCreated: string;
     center: string | null;
+    keywords: string[];
+    assetManifestUrl: string | null;
   }[];
 };
 
 export default function LibraryPage() {
   const [query, setQuery] = useState("nebula");
   const [mediaType, setMediaType] = useState("image");
+  const [page, setPage] = useState(1);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const deferredQuery = useDeferredValue(query);
 
   const { data, error } = useSWR<LibraryPayload>(
-    `/api/nasa/library?query=${encodeURIComponent(deferredQuery)}&mediaType=${mediaType}&page=1`,
+    `/api/nasa/library?query=${encodeURIComponent(deferredQuery)}&mediaType=${mediaType}&page=${page}`,
     fetcher,
   );
   const isLoading = !data && !error;
+  const selectedItem = data?.items.find((item) => item.nasaId === selectedId) || null;
 
   return (
     <section className="section-frame py-12">
@@ -47,6 +52,7 @@ export default function LibraryPage() {
               value={query}
               onChange={(event) =>
                 startTransition(() => {
+                  setPage(1);
                   setQuery(event.target.value);
                 })
               }
@@ -55,7 +61,10 @@ export default function LibraryPage() {
             />
             <select
               value={mediaType}
-              onChange={(event) => setMediaType(event.target.value)}
+              onChange={(event) => {
+                setPage(1);
+                setMediaType(event.target.value);
+              }}
               className="field"
             >
               <option value="image">Images</option>
@@ -76,16 +85,27 @@ export default function LibraryPage() {
             <DataState title="Archive search unavailable" description={error.message} tone="error" />
           ) : data ? (
             <>
-              <div className="metric-tile mb-6">
-                <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
-                  Total hits
-                </p>
-                <p className="mt-3 font-display text-2xl sm:text-3xl md:text-4xl text-white">
-                  {data.totalHits.toLocaleString()}
-                </p>
+              <div className="mb-6 grid gap-4 md:grid-cols-[0.45fr,0.55fr]">
+                <div className="metric-tile">
+                  <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
+                    Total hits
+                  </p>
+                  <p className="mt-3 font-display text-2xl sm:text-3xl md:text-4xl text-white">
+                    {data.totalHits.toLocaleString()}
+                  </p>
+                </div>
+                <div className="metric-tile">
+                  <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
+                    Archive note
+                  </p>
+                  <p className="mt-3 text-sm leading-7 text-slate-300">
+                    You can now page through the archive and open full item details
+                    instead of only seeing clipped overview cards.
+                  </p>
+                </div>
               </div>
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                {data.items.slice(0, 12).map((item) => (
+                {data.items.map((item) => (
                   <article
                     key={`${item.nasaId}-${item.title}`}
                     className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.03]"
@@ -111,10 +131,118 @@ export default function LibraryPage() {
                       <p className="mt-3 line-clamp-4 text-sm leading-7 text-slate-300">
                         {item.description}
                       </p>
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedId(item.nasaId)}
+                          className="button-secondary"
+                        >
+                          Open full details
+                        </button>
+                        {item.assetManifestUrl ? (
+                          <a
+                            href={item.assetManifestUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="button-secondary"
+                          >
+                            Open asset manifest
+                          </a>
+                        ) : null}
+                      </div>
                     </div>
                   </article>
                 ))}
               </div>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={() => setPage((current) => Math.max(1, current - 1))}
+                  className="button-secondary"
+                  disabled={page === 1}
+                >
+                  Previous page
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPage((current) => current + 1)}
+                  className="button-primary"
+                >
+                  Next page
+                </button>
+                <p className="self-center text-sm text-slate-400">
+                  Viewing page {page}
+                </p>
+              </div>
+              {selectedItem ? (
+                <div className="mt-8 rounded-[2rem] border border-cyan-300/20 bg-cyan-300/10 p-6">
+                  <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.28em] text-cyan-100/70">
+                        Full archive detail
+                      </p>
+                      <h2 className="mt-3 font-display text-3xl text-white">
+                        {selectedItem.title}
+                      </h2>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedId(null)}
+                      className="button-secondary"
+                    >
+                      Close detail
+                    </button>
+                  </div>
+                  <div className="mt-6 grid gap-6 lg:grid-cols-[0.85fr,1.15fr]">
+                    {selectedItem.previewUrl ? (
+                      <img
+                        src={selectedItem.previewUrl}
+                        alt={selectedItem.title}
+                        className="w-full rounded-[1.5rem] border border-white/10 object-cover"
+                      />
+                    ) : (
+                      <div className="flex min-h-[18rem] items-center justify-center rounded-[1.5rem] border border-white/10 bg-black/20 text-sm text-slate-500">
+                        No preview available
+                      </div>
+                    )}
+                    <div>
+                      <p className="text-sm text-slate-300">
+                        {selectedItem.description}
+                      </p>
+                      <div className="mt-5 grid gap-3 md:grid-cols-2">
+                        <div className="rounded-[1.25rem] border border-white/10 bg-black/20 p-4">
+                          <p className="text-xs uppercase tracking-[0.24em] text-slate-500">
+                            Center
+                          </p>
+                          <p className="mt-2 text-sm text-white">
+                            {selectedItem.center || "NASA"}
+                          </p>
+                        </div>
+                        <div className="rounded-[1.25rem] border border-white/10 bg-black/20 p-4">
+                          <p className="text-xs uppercase tracking-[0.24em] text-slate-500">
+                            Created
+                          </p>
+                          <p className="mt-2 text-sm text-white">
+                            {selectedItem.dateCreated || "Unknown"}
+                          </p>
+                        </div>
+                      </div>
+                      {selectedItem.keywords.length ? (
+                        <div className="mt-5 flex flex-wrap gap-2">
+                          {selectedItem.keywords.slice(0, 10).map((keyword) => (
+                            <span
+                              key={keyword}
+                              className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-300"
+                            >
+                              {keyword}
+                            </span>
+                          ))}
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                </div>
+              ) : null}
             </>
           ) : null}
         </div>

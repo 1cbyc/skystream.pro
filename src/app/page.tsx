@@ -8,6 +8,13 @@ import type { DashboardPayload } from "@/lib/nasa";
 
 const missionCards = [
   {
+    href: "/artemis",
+    eyebrow: "Moon program",
+    title: "Artemis Mission Desk",
+    description:
+      "Track Artemis II with official NASA mission links, watch surfaces, and related stream-ready media.",
+  },
+  {
     href: "/mood",
     eyebrow: "Daily signal",
     title: "APOD Intelligence",
@@ -43,11 +50,11 @@ const missionCards = [
       "Track coronal mass ejections, flares, and geomagnetic storms with a cleaner mission-ops presentation.",
   },
   {
-    href: "/library",
+    href: "/archive",
     eyebrow: "Archive layer",
-    title: "Media Library Search",
+    title: "Full NASA Archive",
     description:
-      "Search NASA's image and video archive from the app instead of bouncing to raw archive endpoints.",
+      "Search, paginate, and open the full NASA image and video archive from the app with richer item detail.",
   },
   {
     href: "/exoplanets",
@@ -72,16 +79,41 @@ export default function HomePage() {
   return (
     <div className="pb-16">
       <section className="section-frame pt-12 md:pt-16">
-        <div className="glass-panel overflow-hidden rounded-[2.5rem] px-6 py-10 md:px-10 md:py-14">
-          <div className="max-w-4xl">
+        <div className="glass-panel relative overflow-hidden rounded-[2.5rem] px-6 py-10 md:px-10 md:py-14">
+          <div
+            aria-hidden="true"
+            className="absolute -right-24 top-0 h-64 w-64 rounded-full bg-cyan-300/10 blur-3xl"
+          />
+          <div
+            aria-hidden="true"
+            className="absolute bottom-0 left-0 h-48 w-72 rounded-full bg-indigo-400/10 blur-3xl"
+          />
+          <div className="relative max-w-4xl">
             <p className="text-xs uppercase tracking-[0.34em] text-cyan-200/70">
               SkyStream
             </p>
             <h1 className="mt-4 max-w-3xl font-display text-4xl leading-tight text-white md:text-6xl xl:text-7xl">
-              I rebuilt space data into one high signal mission dashboard.
+              One live front page for NASA missions, archives, science, and flight coverage.
             </h1>
-            <p className="mt-6 max-w-2xl text-base leading-7 text-slate-300 md:text-lg md:leading-8">Everything you can think of with space research would be within reach here.
+            <p className="mt-6 max-w-2xl text-base leading-7 text-slate-300 md:text-lg md:leading-8">
+              Mission control at the top, deep archive browsing underneath, and
+              cleaner paths into Artemis, APOD, planetary imagery, asteroid
+              tracking, Mars, solar weather, and exoplanets.
             </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <a
+                href="/artemis"
+                className="button-primary"
+              >
+                Open Artemis desk
+              </a>
+              <a
+                href="/archive"
+                className="button-secondary"
+              >
+                Browse full archive
+              </a>
+            </div>
           </div>
 
           <div className="mt-10 grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
@@ -138,7 +170,9 @@ export default function HomePage() {
                     </p>
                   )}
                   <p className="mt-2 text-xs text-slate-500">
-                    DONKI CME, flare, and geomagnetic storm count
+                    {data?.solarAlerts === 0
+                      ? "No active DONKI alerts in the current window"
+                      : "DONKI CME, flare, and geomagnetic storm count"}
                   </p>
                 </div>
                 <div className="metric-tile">
@@ -154,6 +188,44 @@ export default function HomePage() {
                 </div>
               </>
             )}
+          </div>
+        </div>
+      </section>
+
+      <section className="section-frame mt-12">
+        <div className="glass-panel rounded-[2rem] p-6">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+            <div className="max-w-2xl">
+              <p className="text-xs uppercase tracking-[0.32em] text-cyan-200/70">
+                Artemis spotlight
+              </p>
+              <h2 className="mt-3 font-display text-2xl text-white sm:text-3xl md:text-4xl">
+                Artemis II coverage deserves a home on the front page
+              </h2>
+              <p className="mt-4 text-sm leading-7 text-slate-300 md:text-base">
+                The mission desk now has a dedicated route for official NASA
+                coverage, stream surfaces, mission context, and Artemis-related
+                video/archive material.
+              </p>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <a
+                href="https://www.nasa.gov/mission/artemis-ii/"
+                target="_blank"
+                rel="noreferrer"
+                className="button-secondary text-center"
+              >
+                Official mission page
+              </a>
+              <a
+                href="https://www.youtube.com/@NASA"
+                target="_blank"
+                rel="noreferrer"
+                className="button-secondary text-center"
+              >
+                NASA YouTube
+              </a>
+            </div>
           </div>
         </div>
       </section>
@@ -234,6 +306,9 @@ export default function HomePage() {
                 </p>
               </div>
             ))}
+            <a href="/archive" className="button-secondary inline-flex">
+              Open full archive
+            </a>
           </div>
         </div>
       </section>

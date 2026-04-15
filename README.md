@@ -1,8 +1,6 @@
 # SkyStream.pro
 
-SkyStream.pro is now a full-stack NASA mission dashboard built on Next.js.
-
-The previous Laravel + Next prototype, docs, and service wiring are preserved in `v1/` exactly as a backup. The active app was rebuilt to make development and deployment simpler, while expanding NASA coverage into one coherent product surface.
+SkyStream.pro is your one stop point for everything real and live about space from NASA, ESA, and the ISS.
 
 ## What The Rebuild Covers
 

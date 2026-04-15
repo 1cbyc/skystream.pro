@@ -16,13 +16,13 @@ export default function MissionCard({
   return (
     <Link
       href={href}
-      className="group rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 transition hover:-translate-y-1 hover:border-cyan-300/40 hover:bg-cyan-300/10"
+      className="group rounded-[2rem] border border-white/10 bg-white/[0.04] p-5 transition hover:-translate-y-1 hover:border-cyan-300/40 hover:bg-cyan-300/10 md:p-6"
     >
       <p className="text-xs uppercase tracking-[0.32em] text-cyan-200/70">
         {eyebrow}
       </p>
-      <h3 className="mt-4 font-display text-2xl text-white">{title}</h3>
-      <p className="mt-3 text-sm leading-7 text-slate-300">{description}</p>
+      <h3 className="mt-4 font-display text-xl text-white md:text-2xl">{title}</h3>
+      <p className="mt-3 text-sm leading-6 text-slate-300 md:leading-7">{description}</p>
     </Link>
   );
 }

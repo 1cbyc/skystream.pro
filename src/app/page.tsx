@@ -77,10 +77,10 @@ export default function HomePage() {
             <p className="text-xs uppercase tracking-[0.34em] text-cyan-200/70">
               SkyStream
             </p>
-            <h1 className="mt-4 max-w-3xl font-display text-5xl leading-tight text-white md:text-7xl">
+            <h1 className="mt-4 max-w-3xl font-display text-4xl leading-tight text-white md:text-6xl xl:text-7xl">
               I rebuilt space data into one high signal mission dashboard.
             </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">Everything you can think of with space research would be within reach here.
+            <p className="mt-6 max-w-2xl text-base leading-7 text-slate-300 md:text-lg md:leading-8">Everything you can think of with space research would be within reach here.
             </p>
           </div>
 
@@ -164,7 +164,7 @@ export default function HomePage() {
             <p className="text-xs uppercase tracking-[0.32em] text-cyan-200/70">
               Coverage map
             </p>
-            <h2 className="mt-3 font-display text-3xl text-white md:text-4xl">
+            <h2 className="mt-3 font-display text-2xl text-white sm:text-3xl md:text-4xl">
               A broader, cleaner product surface
             </h2>
           </div>

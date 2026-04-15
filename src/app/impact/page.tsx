@@ -44,7 +44,7 @@ export default function ImpactPage() {
             <p className="text-xs uppercase tracking-[0.32em] text-cyan-200/70">
               NeoWs watch
             </p>
-            <h1 className="mt-3 font-display text-4xl text-white md:text-5xl">
+            <h1 className="mt-3 font-display text-3xl text-white md:text-5xl">
               Near-Earth object tracking with better signal
             </h1>
           </div>
@@ -119,12 +119,12 @@ export default function ImpactPage() {
                         <p className="text-xs uppercase tracking-[0.28em] text-slate-500">
                           {item.date}
                         </p>
-                        <h2 className="mt-3 font-display text-2xl text-white">
+                        <h2 className="mt-3 break-words font-display text-2xl text-white">
                           {item.name}
                         </h2>
                       </div>
                       <span
-                        className={`rounded-full px-3 py-1 text-xs uppercase tracking-[0.24em] ${
+                        className={`shrink-0 rounded-full px-3 py-1 text-[11px] uppercase tracking-[0.2em] ${
                           item.hazardous
                             ? "bg-red-400/20 text-red-100"
                             : "bg-emerald-400/20 text-emerald-100"

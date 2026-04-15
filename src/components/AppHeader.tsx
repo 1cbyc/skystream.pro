@@ -68,14 +68,14 @@ export default function AppHeader() {
           </div>
         </div>
 
-        <nav className="flex flex-wrap gap-2">
+        <nav className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {links.map((link) => {
             const active = pathname === link.href;
             return (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`rounded-full px-4 py-2 text-sm transition ${
+                className={`shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-sm transition ${
                   active
                     ? "bg-cyan-400 text-slate-950"
                     : "border border-white/10 bg-white/5 text-slate-200 hover:border-cyan-300/40 hover:bg-cyan-300/10"

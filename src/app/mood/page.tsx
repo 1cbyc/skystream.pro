@@ -30,7 +30,7 @@ export default function MoodPage() {
             <p className="text-xs uppercase tracking-[0.32em] text-cyan-200/70">
               APOD explorer
             </p>
-            <h1 className="mt-3 font-display text-4xl text-white md:text-5xl">
+            <h1 className="mt-3 font-display text-3xl text-white md:text-5xl">
               Astronomy Picture of the Day, rebuilt as a flagship feature
             </h1>
           </div>
@@ -39,7 +39,7 @@ export default function MoodPage() {
             value={date}
             max={new Date().toISOString().slice(0, 10)}
             onChange={(event) => setDate(event.target.value)}
-            className="field max-w-xs"
+            className="field w-full sm:max-w-xs"
           />
         </div>
 

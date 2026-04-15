@@ -17,8 +17,8 @@ export default function DataState({
         : "border-cyan-400/20 bg-cyan-400/10 text-cyan-100";
 
   return (
-    <div className={`rounded-3xl border p-6 ${toneClass}`}>
-      <p className="font-display text-xl">{title}</p>
+    <div className={`rounded-2xl border p-4 md:rounded-3xl md:p-6 ${toneClass}`}>
+      <p className="font-display text-lg md:text-xl">{title}</p>
       {description ? <p className="mt-2 text-sm opacity-80">{description}</p> : null}
     </div>
   );

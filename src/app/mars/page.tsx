@@ -44,18 +44,18 @@ export default function MarsPage() {
             <p className="text-xs uppercase tracking-[0.32em] text-cyan-200/70">
               Mars desk
             </p>
-            <h1 className="mt-3 font-display text-4xl text-white md:text-5xl">
+            <h1 className="mt-3 font-display text-3xl text-white md:text-5xl">
               Rover imagery, manifests, and mission rhythm
             </h1>
           </div>
-          <div className="flex gap-3">
+          <div className="flex w-full gap-3 sm:w-auto">
             <select
               value={rover}
               onChange={(event) => {
                 setPage(1);
                 setRover(event.target.value);
               }}
-              className="field min-w-[12rem]"
+              className="field w-full sm:min-w-[12rem] sm:w-auto"
             >
               <option value="curiosity">Curiosity</option>
               <option value="perseverance">Perseverance</option>
@@ -138,11 +138,11 @@ export default function MarsPage() {
                 ))}
               </div>
 
-              <div className="mt-8 flex gap-3">
+              <div className="mt-8 flex flex-wrap gap-3">
                 <button
                   type="button"
                   onClick={() => setPage((value) => Math.max(1, value - 1))}
-                  className="button-secondary"
+                  className="button-secondary flex-1 sm:flex-none"
                   disabled={page === 1}
                 >
                   Previous page
@@ -150,7 +150,7 @@ export default function MarsPage() {
                 <button
                   type="button"
                   onClick={() => setPage((value) => value + 1)}
-                  className="button-primary"
+                  className="button-primary flex-1 sm:flex-none"
                 >
                   Next page
                 </button>

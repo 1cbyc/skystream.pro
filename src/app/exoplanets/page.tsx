@@ -29,7 +29,7 @@ export default function ExoplanetsPage() {
         <p className="text-xs uppercase tracking-[0.32em] text-cyan-200/70">
           Exoplanet archive
         </p>
-        <h1 className="mt-3 font-display text-4xl text-white md:text-5xl">
+        <h1 className="mt-3 font-display text-3xl text-white md:text-5xl">
           Recent exoplanet discoveries with quick discovery context
         </h1>
 
@@ -73,7 +73,7 @@ export default function ExoplanetsPage() {
 
               <div className="mt-8 overflow-hidden rounded-[2rem] border border-white/10">
                 <div className="overflow-x-auto">
-                  <table className="min-w-full divide-y divide-white/10">
+                  <table className="min-w-[42rem] divide-y divide-white/10">
                     <thead className="bg-white/[0.04]">
                       <tr className="text-left text-xs uppercase tracking-[0.24em] text-slate-400">
                         <th className="px-4 py-4">Planet</th>

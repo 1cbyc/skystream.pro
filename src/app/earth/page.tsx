@@ -52,13 +52,13 @@ export default function EarthPage() {
         <p className="text-xs uppercase tracking-[0.32em] text-cyan-200/70">
           Earth observation
         </p>
-        <h1 className="mt-3 font-display text-4xl text-white md:text-5xl">
+        <h1 className="mt-3 font-display text-3xl text-white md:text-5xl">
           EPIC frames, Earth assets, and natural event watchlists
         </h1>
 
         <div className="mt-8 grid gap-6 xl:grid-cols-[1.1fr,0.9fr]">
           <div className="rounded-[2rem] border border-white/10 bg-white/[0.03] p-5">
-            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center justify-between gap-4">
               <h2 className="font-display text-2xl text-white">DSCOVR EPIC</h2>
             </div>
             {epicLoading ? (
@@ -86,7 +86,7 @@ export default function EarthPage() {
                       <p className="text-xs uppercase tracking-[0.24em] text-slate-500">
                         {frame.date}
                       </p>
-                      <p className="mt-2 text-sm leading-7 text-slate-200">
+                      <p className="mt-2 break-words text-sm leading-7 text-slate-200">
                         {frame.caption}
                       </p>
                     </div>
@@ -169,7 +169,7 @@ export default function EarthPage() {
                     <p className="text-xs uppercase tracking-[0.24em] text-slate-500">
                       {event.categories.join(" • ") || "event"}
                     </p>
-                    <h3 className="mt-2 font-display text-xl text-white">
+                    <h3 className="mt-2 break-words font-display text-xl text-white">
                       {event.title}
                     </h3>
                   </div>

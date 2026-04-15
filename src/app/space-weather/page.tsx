@@ -29,7 +29,7 @@ export default function SpaceWeatherPage() {
             <p className="text-xs uppercase tracking-[0.32em] text-cyan-200/70">
               DONKI digest
             </p>
-            <h1 className="mt-3 font-display text-4xl text-white md:text-5xl">
+            <h1 className="mt-3 font-display text-3xl text-white md:text-5xl">
               Solar weather in a cleaner operations format
             </h1>
           </div>
@@ -39,7 +39,7 @@ export default function SpaceWeatherPage() {
             max="30"
             value={days}
             onChange={(event) => setDays(event.target.value)}
-            className="field max-w-[10rem]"
+            className="field w-full sm:max-w-[10rem]"
           />
         </div>
 

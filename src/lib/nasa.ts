@@ -1,6 +1,6 @@
 const NASA_API_KEY = process.env.NASA_API_KEY || "DEMO_KEY";
 const NASA_BASE_URL = "https://api.nasa.gov";
-const EONET_BASE_URL = "https://eonet.gsfc.nasa.gov/api/v3";
+const EONET_BASE_URL = "https://eonet.gsfc.nasa.gov/api/v3/";
 const NASA_IMAGES_BASE_URL = "https://images-api.nasa.gov";
 const EXOPLANET_BASE_URL =
   "https://exoplanetarchive.ipac.caltech.edu/TAP/sync";
@@ -264,19 +264,30 @@ export async function fetchEarthAssets(options?: {
   const date = options?.date || normalizeDate(new Date().toISOString());
   const dim = options?.dim ?? 0.15;
 
-  const raw = await requestJson<JsonRecord>(
-    buildNasaUrl("/planetary/earth/assets", { lat, lon, date, dim }),
-    60 * 60 * 6,
-  );
+  try {
+    const raw = await requestJson<JsonRecord>(
+      buildNasaUrl("/planetary/earth/assets", { lat, lon, date, dim }),
+      60 * 60 * 6,
+    );
 
-  return {
-    lat,
-    lon,
-    date: String(raw.date || date || ""),
-    id: raw.id ? String(raw.id) : null,
-    resource: raw.resource as JsonRecord | undefined,
-    url: raw.url ? String(raw.url) : null,
-  };
+    return {
+      lat,
+      lon,
+      date: String(raw.date || date || ""),
+      id: raw.id ? String(raw.id) : null,
+      resource: raw.resource as JsonRecord | undefined,
+      url: raw.url ? String(raw.url) : null,
+    };
+  } catch {
+    return {
+      lat,
+      lon,
+      date: String(date || ""),
+      id: null,
+      resource: undefined,
+      url: null,
+    };
+  }
 }
 
 export async function fetchEonet(options?: {
@@ -285,7 +296,7 @@ export async function fetchEonet(options?: {
   start?: string;
   end?: string;
 }) {
-  const url = new URL("/events", EONET_BASE_URL);
+  const url = new URL("events", EONET_BASE_URL);
   url.searchParams.set("status", options?.status || "open");
   url.searchParams.set("limit", String(options?.limit || 12));
 

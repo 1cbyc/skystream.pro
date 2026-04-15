@@ -7,6 +7,6 @@ services:
       dockerfile: Dockerfile
     container_name: skystream_app
     ports:
-      - "3000:3000"
+      - "3009:3009"
     env_file:
       - ./.env.local

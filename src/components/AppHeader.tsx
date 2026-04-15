@@ -31,13 +31,13 @@ export default function AppHeader() {
                 SkyStream
               </p>
               <p className="text-xs uppercase tracking-[0.28em] text-slate-400">
-                NASA Mission Control
+                by Nsisong
               </p>
             </div>
           </Link>
 
           <div className="hidden rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs uppercase tracking-[0.28em] text-slate-300 md:block">
-            Full-stack Next.js rebuild
+            Space in one place
           </div>
         </div>
 

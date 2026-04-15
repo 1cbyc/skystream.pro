@@ -47,7 +47,7 @@ npm run dev
 4. Open the site:
 
 ```txt
-http://localhost:3000
+http://localhost:3009
 ```
 
 ## Verification
@@ -74,3 +74,15 @@ Everything that existed before the rebuild is preserved under:
 ```txt
 v1/
 ```
+
+## Vercel
+
+Deploy from the repository root.
+
+- Root Directory: `.`
+- Framework Preset: `Next.js`
+- Build Command: `npm run build`
+- Install Command: `npm ci`
+- Environment Variables:
+  - `NASA_API_KEY`
+  - `NEXT_PUBLIC_SITE_URL`

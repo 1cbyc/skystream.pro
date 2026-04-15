@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbo",
+    "dev": "next dev --turbo --port 3009",
     "lint": "next lint",
     "build": "next build",
-    "start": "next start"
+    "start": "next start -p 3009"
   },
   "dependencies": {
     "date-fns": "^3.6.0",

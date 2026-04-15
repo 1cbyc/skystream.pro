@@ -37,6 +37,7 @@ function buildNasaUrl(
 async function requestJson<T>(url: string, cacheSeconds = 1800): Promise<T> {
   const response = await fetch(url, {
     next: { revalidate: cacheSeconds },
+    signal: AbortSignal.timeout(12000),
     headers: {
       Accept: "application/json",
     },

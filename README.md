@@ -65,14 +65,6 @@ The root `docker-compose.yml` now runs the rebuilt Next.js app directly:
 docker-compose up --build
 ```
 
-## Legacy Backup
-
-Everything that existed before the rebuild is preserved under:
-
-```txt
-v1/
-```
-
 ## Vercel
 
 Deploy from the repository root.

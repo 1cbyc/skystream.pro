@@ -14,9 +14,12 @@ type LibraryPayload = {
     previewUrl: string | null;
     dateCreated: string;
     center: string | null;
+    detailsUrl: string | null;
     assetManifestUrl: string | null;
   }[];
 };
+
+type CuratedVideo = LibraryPayload["items"][number];
 
 const missionLinks = [
   {
@@ -48,6 +51,30 @@ export default function ArtemisPage() {
     fetcher,
   );
   const isLoading = !data && !error;
+  const items = data?.items || [];
+  const missionOverview =
+    items.find((item) => /mission overview/i.test(item.title)) || null;
+  const launchVideo =
+    items.find(
+      (item) =>
+        /liftoff|launch|fueling operations|tanking/i.test(item.title),
+    ) || null;
+  const flightHighlights = items.filter((item) =>
+    /flight day|highlights/i.test(item.title),
+  );
+  const curatedVideos = [
+    { label: "Launch", item: launchVideo },
+    { label: "Mission overview", item: missionOverview },
+    { label: "Flight highlights", item: flightHighlights[0] || null },
+  ].filter((entry): entry is { label: string; item: CuratedVideo } => Boolean(entry.item));
+
+  const watchHrefFor = (label: string, item: CuratedVideo) => {
+    if (label === "Launch") {
+      return item.detailsUrl || "https://plus.nasa.gov/";
+    }
+
+    return item.detailsUrl || item.assetManifestUrl || "https://www.youtube.com/@NASA";
+  };
 
   return (
     <section className="section-frame py-12">
@@ -106,8 +133,61 @@ export default function ArtemisPage() {
                 />
               </div>
             ) : (
-              <div className="mt-5 grid gap-4 md:grid-cols-2">
-                {(data?.items || []).slice(0, 6).map((item) => (
+              <div className="mt-5">
+                <div className="grid gap-4 lg:grid-cols-3">
+                  {curatedVideos.map(({ label, item }) => (
+                    <article
+                      key={`${label}-${item.nasaId}`}
+                      className="overflow-hidden rounded-[1.5rem] border border-cyan-300/20 bg-cyan-300/10"
+                    >
+                      {item.previewUrl ? (
+                        <img
+                          src={item.previewUrl}
+                          alt={item.title}
+                          className="h-48 w-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-48 items-center justify-center bg-black/30 text-sm text-slate-500">
+                          No preview
+                        </div>
+                      )}
+                      <div className="p-4">
+                        <p className="text-xs uppercase tracking-[0.28em] text-cyan-100/70">
+                          {label}
+                        </p>
+                        <h3 className="mt-2 font-display text-xl text-white">
+                          {item.title}
+                        </h3>
+                        <p className="mt-2 line-clamp-3 text-sm leading-7 text-slate-300">
+                          {item.description}
+                        </p>
+                        <div className="mt-4 flex flex-wrap gap-3">
+                          <a
+                            href={watchHrefFor(label, item)}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="button-primary"
+                          >
+                            {label === "Launch" ? "Watch coverage" : "Watch now"}
+                          </a>
+                        {item.assetManifestUrl ? (
+                          <a
+                            href={item.assetManifestUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="button-secondary"
+                          >
+                            Open asset manifest
+                          </a>
+                        ) : null}
+                        </div>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+
+                <div className="mt-6 grid gap-4 md:grid-cols-2">
+                  {items.slice(0, 6).map((item) => (
                   <article
                     key={`${item.nasaId}-${item.title}`}
                     className="overflow-hidden rounded-[1.5rem] border border-white/10 bg-black/20"
@@ -133,19 +213,32 @@ export default function ArtemisPage() {
                       <p className="mt-2 line-clamp-3 text-sm leading-7 text-slate-300">
                         {item.description}
                       </p>
-                      {item.assetManifestUrl ? (
-                        <a
-                          href={item.assetManifestUrl}
+                      <div className="mt-4 flex flex-wrap gap-3">
+                        {item.detailsUrl ? (
+                          <a
+                            href={item.detailsUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="button-secondary"
+                          >
+                            Open NASA page
+                          </a>
+                        ) : null}
+                        {item.assetManifestUrl ? (
+                          <a
+                            href={item.assetManifestUrl}
                           target="_blank"
                           rel="noreferrer"
-                          className="mt-4 inline-flex text-sm text-cyan-200"
+                          className="button-secondary"
                         >
                           Open NASA asset manifest
                         </a>
-                      ) : null}
+                        ) : null}
+                      </div>
                     </div>
                   </article>
-                ))}
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -154,4 +247,3 @@ export default function ArtemisPage() {
     </section>
   );
 }
-

@@ -389,6 +389,9 @@ export async function searchNasaLibrary(options?: {
       dateCreated: String(data.date_created || ""),
       center: data.center ? String(data.center) : null,
       keywords: getArray<string>(data.keywords),
+      detailsUrl: data.nasa_id
+        ? `https://images.nasa.gov/details-${String(data.nasa_id)}`
+        : null,
       assetManifestUrl: item.href ? String(item.href) : null,
     };
   });

@@ -16,6 +16,7 @@ type LibraryPayload = {
     dateCreated: string;
     center: string | null;
     keywords: string[];
+    detailsUrl: string | null;
     assetManifestUrl: string | null;
   }[];
 };
@@ -32,7 +33,6 @@ export default function LibraryPage() {
     fetcher,
   );
   const isLoading = !data && !error;
-  const selectedItem = data?.items.find((item) => item.nasaId === selectedId) || null;
 
   return (
     <section className="section-frame py-12">
@@ -105,10 +105,17 @@ export default function LibraryPage() {
                 </div>
               </div>
               <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                {data.items.map((item) => (
+                {data.items.map((item) => {
+                  const isOpen = selectedId === item.nasaId;
+
+                  return (
                   <article
                     key={`${item.nasaId}-${item.title}`}
-                    className="overflow-hidden rounded-[1.75rem] border border-white/10 bg-white/[0.03]"
+                    className={`overflow-hidden rounded-[1.75rem] border bg-white/[0.03] transition ${
+                      isOpen
+                        ? "border-cyan-300/35 shadow-[0_0_0_1px_rgba(103,232,249,0.2)]"
+                        : "border-white/10"
+                    }`}
                   >
                     {item.previewUrl ? (
                       <img
@@ -134,11 +141,27 @@ export default function LibraryPage() {
                       <div className="mt-4 flex flex-wrap gap-2">
                         <button
                           type="button"
-                          onClick={() => setSelectedId(item.nasaId)}
+                          onClick={() =>
+                            setSelectedId((current) =>
+                              current === item.nasaId ? null : item.nasaId,
+                            )
+                          }
                           className="button-secondary"
                         >
-                          Open full details
+                          {isOpen
+                            ? "Close full details"
+                            : "Open full details"}
                         </button>
+                        {item.detailsUrl ? (
+                          <a
+                            href={item.detailsUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="button-secondary"
+                          >
+                            Open NASA page
+                          </a>
+                        ) : null}
                         {item.assetManifestUrl ? (
                           <a
                             href={item.assetManifestUrl}
@@ -150,9 +173,47 @@ export default function LibraryPage() {
                           </a>
                         ) : null}
                       </div>
+                      {isOpen ? (
+                        <div className="mt-5 rounded-[1.5rem] border border-cyan-300/20 bg-cyan-300/10 p-4">
+                          <p className="text-xs uppercase tracking-[0.28em] text-cyan-100/70">
+                            Full archive detail
+                          </p>
+                          <div className="mt-4 grid gap-3 md:grid-cols-2">
+                            <div className="rounded-[1.15rem] border border-white/10 bg-black/20 p-4">
+                              <p className="text-xs uppercase tracking-[0.24em] text-slate-500">
+                                Center
+                              </p>
+                              <p className="mt-2 text-sm text-white">
+                                {item.center || "NASA"}
+                              </p>
+                            </div>
+                            <div className="rounded-[1.15rem] border border-white/10 bg-black/20 p-4">
+                              <p className="text-xs uppercase tracking-[0.24em] text-slate-500">
+                                Created
+                              </p>
+                              <p className="mt-2 text-sm text-white">
+                                {item.dateCreated || "Unknown"}
+                              </p>
+                            </div>
+                          </div>
+                          {item.keywords.length ? (
+                            <div className="mt-4 flex flex-wrap gap-2">
+                              {item.keywords.slice(0, 10).map((keyword) => (
+                                <span
+                                  key={keyword}
+                                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-300"
+                                >
+                                  {keyword}
+                                </span>
+                              ))}
+                            </div>
+                          ) : null}
+                        </div>
+                      ) : null}
                     </div>
                   </article>
-                ))}
+                  );
+                })}
               </div>
               <div className="mt-8 flex flex-wrap gap-3">
                 <button
@@ -174,75 +235,6 @@ export default function LibraryPage() {
                   Viewing page {page}
                 </p>
               </div>
-              {selectedItem ? (
-                <div className="mt-8 rounded-[2rem] border border-cyan-300/20 bg-cyan-300/10 p-6">
-                  <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                    <div>
-                      <p className="text-xs uppercase tracking-[0.28em] text-cyan-100/70">
-                        Full archive detail
-                      </p>
-                      <h2 className="mt-3 font-display text-3xl text-white">
-                        {selectedItem.title}
-                      </h2>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedId(null)}
-                      className="button-secondary"
-                    >
-                      Close detail
-                    </button>
-                  </div>
-                  <div className="mt-6 grid gap-6 lg:grid-cols-[0.85fr,1.15fr]">
-                    {selectedItem.previewUrl ? (
-                      <img
-                        src={selectedItem.previewUrl}
-                        alt={selectedItem.title}
-                        className="w-full rounded-[1.5rem] border border-white/10 object-cover"
-                      />
-                    ) : (
-                      <div className="flex min-h-[18rem] items-center justify-center rounded-[1.5rem] border border-white/10 bg-black/20 text-sm text-slate-500">
-                        No preview available
-                      </div>
-                    )}
-                    <div>
-                      <p className="text-sm text-slate-300">
-                        {selectedItem.description}
-                      </p>
-                      <div className="mt-5 grid gap-3 md:grid-cols-2">
-                        <div className="rounded-[1.25rem] border border-white/10 bg-black/20 p-4">
-                          <p className="text-xs uppercase tracking-[0.24em] text-slate-500">
-                            Center
-                          </p>
-                          <p className="mt-2 text-sm text-white">
-                            {selectedItem.center || "NASA"}
-                          </p>
-                        </div>
-                        <div className="rounded-[1.25rem] border border-white/10 bg-black/20 p-4">
-                          <p className="text-xs uppercase tracking-[0.24em] text-slate-500">
-                            Created
-                          </p>
-                          <p className="mt-2 text-sm text-white">
-                            {selectedItem.dateCreated || "Unknown"}
-                          </p>
-                        </div>
-                      </div>
-                      {selectedItem.keywords.length ? (
-                        <div className="mt-5 flex flex-wrap gap-2">
-                          {selectedItem.keywords.slice(0, 10).map((keyword) => (
-                            <span
-                              key={keyword}
-                              className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-300"
-                            >
-                              {keyword}
-                            </span>
-                          ))}
-                        </div>
-                      ) : null}
-                    </div>
-                  </div>
-                </div>
-              ) : null}
             </>
           ) : null}
         </div>

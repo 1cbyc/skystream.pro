@@ -75,15 +75,12 @@ export default function HomePage() {
         <div className="glass-panel overflow-hidden rounded-[2.5rem] px-6 py-10 md:px-10 md:py-14">
           <div className="max-w-4xl">
             <p className="text-xs uppercase tracking-[0.34em] text-cyan-200/70">
-              Rebuilt platform
+              SkyStream
             </p>
             <h1 className="mt-4 max-w-3xl font-display text-5xl leading-tight text-white md:text-7xl">
-              NASA data, rebuilt into one high-signal mission dashboard.
+              I rebuilt space data into one high signal mission dashboard.
             </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">
-              The old split-stack prototype is preserved in <span className="rounded bg-white/5 px-2 py-1 text-slate-100">v1/</span>. The
-              active product is now a single Next.js app with server-side NASA
-              integrations, broader API coverage, and a cleaner product shape.
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-300">Everything you can think of with space research would be within reach here.
             </p>
           </div>
 

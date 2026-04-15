@@ -60,20 +60,46 @@ function normalizeDate(value?: string) {
   return value ? value.slice(0, 10) : undefined;
 }
 
-export async function fetchApod(date?: string) {
-  const raw = await requestJson<JsonRecord>(
-    buildNasaUrl("/planetary/apod", { date }),
-    60 * 60,
-  );
-
+function mapApod(raw: JsonRecord, fallbackDate?: string) {
   return {
-    date: String(raw.date || date || ""),
+    date: String(raw.date || fallbackDate || ""),
     title: String(raw.title || "Astronomy Picture of the Day"),
     explanation: String(raw.explanation || ""),
     imageUrl: String(raw.hdurl || raw.url || ""),
     mediaType: String(raw.media_type || "image"),
     copyright: raw.copyright ? String(raw.copyright) : null,
   };
+}
+
+export async function fetchApod(date?: string) {
+  try {
+    const raw = await requestJson<JsonRecord>(
+      buildNasaUrl("/planetary/apod", { date }),
+      60 * 60,
+    );
+
+    return mapApod(raw, date);
+  } catch (error) {
+    if (!date) {
+      for (let offset = 1; offset <= 7; offset += 1) {
+        const fallbackDate = new Date();
+        fallbackDate.setDate(fallbackDate.getDate() - offset);
+        const isoDate = normalizeDate(fallbackDate.toISOString());
+
+        try {
+          const raw = await requestJson<JsonRecord>(
+            buildNasaUrl("/planetary/apod", { date: isoDate }),
+            60 * 60,
+          );
+          return mapApod(raw, isoDate);
+        } catch {
+          continue;
+        }
+      }
+    }
+
+    throw error;
+  }
 }
 
 export async function fetchNeoFeed(startDate: string, endDate: string) {
@@ -146,33 +172,61 @@ export async function fetchMarsPhotos(options?: {
   camera?: string;
 }) {
   const rover = options?.rover || "curiosity";
-  const manifest = await fetchMarsManifest(rover);
-  const sol = options?.sol ?? manifest.maxSol;
-  const page = options?.page ?? 1;
+  try {
+    const manifest = await fetchMarsManifest(rover);
+    const sol = options?.sol ?? manifest.maxSol;
+    const page = options?.page ?? 1;
 
-  const raw = await requestJson<JsonRecord>(
-    buildNasaUrl(`/mars-photos/api/v1/rovers/${rover}/photos`, {
-      sol,
-      page,
-      camera: options?.camera,
-    }),
-    60 * 60 * 24,
-  );
+    const raw = await requestJson<JsonRecord>(
+      buildNasaUrl(`/mars-photos/api/v1/rovers/${rover}/photos`, {
+        sol,
+        page,
+        camera: options?.camera,
+      }),
+      60 * 60 * 24,
+    );
 
-  const photos = getArray<JsonRecord>(raw.photos).map((photo) => ({
-    id: String(photo.id || ""),
-    rover: String((photo.rover as JsonRecord)?.name || rover),
-    camera: String((photo.camera as JsonRecord)?.full_name || ""),
-    imageUrl: String(photo.img_src || ""),
-    earthDate: String(photo.earth_date || ""),
-    sol: Number(photo.sol || sol),
-  }));
+    const photos = getArray<JsonRecord>(raw.photos).map((photo) => ({
+      id: String(photo.id || ""),
+      rover: String((photo.rover as JsonRecord)?.name || rover),
+      camera: String((photo.camera as JsonRecord)?.full_name || ""),
+      imageUrl: String(photo.img_src || ""),
+      earthDate: String(photo.earth_date || ""),
+      sol: Number(photo.sol || sol),
+    }));
 
-  return {
-    rover,
-    manifest,
-    photos,
-  };
+    return {
+      rover,
+      manifest,
+      photos,
+    };
+  } catch {
+    const library = await searchNasaLibrary({
+      query: `${rover} mars rover`,
+      mediaType: "image",
+      page: options?.page ?? 1,
+    });
+
+    return {
+      rover,
+      manifest: {
+        rover,
+        status: "archive",
+        maxSol: 0,
+        launchDate: "",
+        landingDate: "",
+        totalPhotos: library.totalHits,
+      },
+      photos: library.items.slice(0, 12).map((item, index) => ({
+        id: item.nasaId || `${rover}-${index}`,
+        rover,
+        camera: item.center || "NASA archive",
+        imageUrl: item.previewUrl || "",
+        earthDate: item.dateCreated,
+        sol: 0,
+      })),
+    };
+  }
 }
 
 function buildEpicImageUrl(image: string, date: string) {
@@ -334,11 +388,10 @@ export async function searchNasaLibrary(options?: {
 
 export async function fetchExoplanets(limit = 18) {
   const query = `
-    select pl_name, hostname, discoverymethod, disc_year, disc_facility, sy_dist, pl_rade, pl_bmasse, pl_orbper
+    select top ${limit} pl_name, hostname, discoverymethod, disc_year, disc_facility, sy_dist, pl_rade, pl_bmasse, pl_orbper
     from pscomppars
     where disc_year is not null
     order by disc_year desc
-    limit ${limit}
   `;
 
   const url = new URL(EXOPLANET_BASE_URL);
